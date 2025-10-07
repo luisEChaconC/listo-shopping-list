@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "npx tsc && npx tsc-alias",
     "start": "node dist/main.js",
-    "dev": "nodemon --quiet --exec ts-node src/main.ts",
-    "test": "jest",
-    "lint": "eslint . --ext .js,.ts",
+    "dev": "nodemon --quiet --exec npx ts-node src/main.ts",
+    "test": "npx jest",
+    "lint": "npx eslint . --ext .js,.ts",
     "format": "prettier --write ."
   },
   "nodemonConfig": {
