@@ -1,4 +1,4 @@
-import app from "@presentation/app";
+import app from "backend/presentation/app";
 
 const port = process.env.PORT || 3000;
 
