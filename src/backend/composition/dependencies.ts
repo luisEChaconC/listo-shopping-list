@@ -1,8 +1,14 @@
-const DOMAIN_DEPENDENCIES = {};
+const DOMAIN_DEPENDENCIES = {
+  UserRepository: Symbol.for("UserRepository"),
+};
 
-const APPLICATION_DEPENDENCIES = {};
+const APPLICATION_DEPENDENCIES = {
+  SignupService: Symbol.for("SignupService"),
+};
 
-const INFRASTRUCTURE_DEPENDENCIES = {};
+const INFRASTRUCTURE_DEPENDENCIES = {
+  MockUserRepository: Symbol.for("MockUserRepository"),
+};
 
 const PRESENTATION_DEPENDENCIES = {};
 

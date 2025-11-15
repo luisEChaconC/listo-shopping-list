@@ -11,14 +11,20 @@ if (!process.env.JWT_SECRET) {
 const app = express();
 app.use(helmet());
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
     credentials: true
 }));
 app.use(express.json());
 
 // JWT middleware
 app.use((req, res, next) => {
-    if (req.path === "/health") return next();
+    // Public routes
+    if (
+        req.path === "/health" ||
+        req.path === "/auth/signup"
+    ) {
+        return next();
+    }
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({ error: "Missing or invalid Authorization header" });
@@ -32,6 +38,10 @@ app.use((req, res, next) => {
         return res.status(401).json({ error: "Invalid token" });
     }
 });
+
+import { signupHandler } from "./auth-handler";
+
+app.post("/auth/signup", signupHandler);
 
 app.get("/health", (req, res) => {
     res.json({ status: "ok" });
