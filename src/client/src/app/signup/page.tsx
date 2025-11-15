@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import React from 'react'
+import { signup } from '../../api/auth/authentication'
 
 export default function SignUp() {
     const [fullName, setFullName] = useState('')
@@ -14,20 +15,23 @@ export default function SignUp() {
         e.preventDefault()
         setIsLoading(true)
 
-        // Check if passwords match
         if (password !== confirmPassword) {
             alert('Passwords do not match!')
             setIsLoading(false)
             return
         }
 
-        // TODO: Implement registration logic
-        console.log('Registration attempt:', { fullName, email, password })
-
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 2000)
+        const result = await signup({
+            name: fullName,
+            email,
+            password,
+        })
+        if (result.success) {
+            window.location.href = "/login"
+        } else {
+            alert(result.error)
+        }
+        setIsLoading(false)
     }
 
     return (
@@ -134,28 +138,6 @@ export default function SignUp() {
                             )}
                         </button>
                     </form>
-
-                    {/* Divider */}
-                    <div className="mt-8">
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-300" />
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white text-gray-500">Already have an account?</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Login Link */}
-                    <div className="mt-6">
-                        <Link
-                            href="/login"
-                            className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
-                        >
-                            Sign in to existing account
-                        </Link>
-                    </div>
                 </div>
             </div>
         </div>
