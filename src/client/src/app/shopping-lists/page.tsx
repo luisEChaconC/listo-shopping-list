@@ -44,16 +44,22 @@ export default async function ShoppingListsPage() {
                         New List
                     </a>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
-                    {lists.map(list => (
-                        <ShoppingListCard
-                            key={list.id}
-                            id={list.id}
-                            title={list.title}
-                            productList={list.productList}
-                        />
-                    ))}
-                </div>
+                {lists.length === 0 ? (
+                    <div className="w-full flex flex-col items-center justify-center py-20">
+                        <p className="text-gray-400 text-lg">No shopping lists found.</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+                        {lists.map(list => (
+                            <ShoppingListCard
+                                key={list.id}
+                                id={list.id}
+                                title={list.title}
+                                productList={list.productList}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     )
