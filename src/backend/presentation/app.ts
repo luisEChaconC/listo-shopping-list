@@ -7,14 +7,11 @@ import jwt from "jsonwebtoken";
 if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET environment variable is not defined. Backend cannot start.");
 }
-if (!process.env.FRONTEND_PORT) {
-    throw new Error("FRONTEND_PORT environment variable is not defined. Backend cannot start.");
-}
 
 const app = express();
 app.use(helmet());
 app.use(cors({
-    origin: `http://localhost:${process.env.FRONTEND_PORT}`,
+    origin: "http://localhost:3000",
     credentials: true
 }));
 app.use(express.json());

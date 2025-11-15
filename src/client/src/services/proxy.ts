@@ -18,7 +18,7 @@ export function getUserRoleFromJWT(token: string | undefined): string | null {
     }
 }
 
-export function roleMiddleware(request: NextRequest) {
+export function roleProxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const allowedRoles = routeRoles[pathname];
     if (!allowedRoles) return NextResponse.next();
@@ -32,6 +32,6 @@ export function roleMiddleware(request: NextRequest) {
     return NextResponse.next();
 }
 
-export const roleMiddlewareConfig = {
+export const roleProxyConfig = {
     matcher: ["/admin", "/products", "/shopping-lists"],
 };
