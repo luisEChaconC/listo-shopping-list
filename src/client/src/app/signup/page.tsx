@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import React from 'react'
 import { signup } from '../../api/auth/authentication'
+import { NotificationService } from '../../utils/notifications'
 
 export default function SignUp() {
     const [fullName, setFullName] = useState('')
@@ -16,7 +17,7 @@ export default function SignUp() {
         setIsLoading(true)
 
         if (password !== confirmPassword) {
-            alert('Passwords do not match!')
+            NotificationService.showError('Passwords do not match!', 'Please make sure both passwords are the same.');
             setIsLoading(false)
             return
         }
@@ -27,9 +28,11 @@ export default function SignUp() {
             password,
         })
         if (result.success) {
-            window.location.href = "/login"
+            NotificationService.showSuccess('Account created!', 'You can now log in.').then(() => {
+                window.location.href = "/login"
+            })
         } else {
-            alert(result.error)
+            NotificationService.showError('Registration failed', result.error || 'An error occurred.')
         }
         setIsLoading(false)
     }
