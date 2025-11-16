@@ -1,6 +1,6 @@
 import { Container } from "inversify";
 import { SignupService } from "../application/signup-service.js";
-import { MockUserRepository } from "../infrastructure/mock-user-repository.js";
+import { PostgreSQLUserRepository } from "../infrastructure/postgresql-user-repository.js";
 import { DEPENDENCIES } from "./dependencies.js";
 import type { UserRepository } from "../domain/user.js";
 
@@ -22,7 +22,7 @@ function registerApplicationDependencies(container: Container) {
 }
 
 function registerInfrastructureDependencies(container: Container) {
-  container.bind(DEPENDENCIES.UserRepository).to(MockUserRepository);
+  container.bind(DEPENDENCIES.UserRepository).to(PostgreSQLUserRepository);
 }
 
 function registerPresentationDependencies(container: Container) { }

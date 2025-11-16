@@ -9,7 +9,14 @@ export async function signupHandler(req: Request, res: Response) {
     if (!name || !email || !password) {
         return res.status(400).json({ error: "Missing required fields" });
     }
-    const signupService = container.get(DEPENDENCIES.SignupService) as import("../application/signup-service").SignupService;
-    const user = await signupService.register({ name, email, password });
-    return res.status(201).json({ user });
+    try {
+        const signupService = container.get(DEPENDENCIES.SignupService) as import("../application/signup-service").SignupService;
+        const user = await signupService.register({ name, email, password });
+        return res.status(201).json({ user });
+    } catch (error) {
+        if (error instanceof Error && error.message.includes('User already exists')) {
+            return res.status(409).json({ error: 'User already exists' });
+        }
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 }

@@ -7,7 +7,7 @@ const APPLICATION_DEPENDENCIES = {
 };
 
 const INFRASTRUCTURE_DEPENDENCIES = {
-  MockUserRepository: Symbol.for("MockUserRepository"),
+  PostgreSQLUserRepository: Symbol.for("PostgreSQLUserRepository"),
 };
 
 const PRESENTATION_DEPENDENCIES = {};
