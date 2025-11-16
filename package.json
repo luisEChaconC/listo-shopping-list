@@ -6,8 +6,9 @@
   "scripts": {
     "build": "npx tsc && npx tsc-alias",
     "start": "node dist/main.js",
-    "dev": "concurrently \"npm run dev:backend\" \"cd src/client && npx next dev\"",
-    "dev:backend": "nodemon --exec npx tsx src/backend/main.ts",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "copy .env src\\backend\\.env >nul 2>&1 && nodemon --exec npx tsx src/backend/main.ts",
+    "dev:frontend": "copy .env src\\client\\.env >nul 2>&1 && cd src/client && npx next dev",
     "test": "npx jest",
     "lint": "npx eslint . --ext .js,.ts",
     "format": "prettier --write ."
@@ -40,6 +41,7 @@
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.14",
+    "@types/pg": "^8.15.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/swagger-jsdoc": "^6.0.4",
@@ -71,10 +73,13 @@
     "inversify": "^7.7.0",
     "jsonwebtoken": "^9.0.2",
     "next": "16.0.1",
+    "pg": "^8.16.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "reflect-metadata": "^0.2.2",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "sweetalert2": "^11.26.3",
+    "typeorm": "^0.3.27"
   }
 }
