@@ -1,37 +1,37 @@
 # Listo Shopping List Backend
 
-This backend uses Express and Swagger for API documentation. The folder structure is designed for scalability and separation of concerns.
+This backend uses Express and TypeORM for API development. The folder structure is designed for simplicity and separation of concerns.
 
 ## Folder Structure
-- `application/` — Application logic (use cases, services)
-- `composition/` — Dependency injection and composition root
-- `domain/` — Domain models and business logic
-- `infrastructure/` — External integrations (DB, APIs)
-- `presentation/` — Express routers, controllers, and middleware
+- `config/` — Database and other configurations
+- `routes/` — Route definitions and handlers
+- `services/` — Business logic (e.g., signup-service.ts)
+- `repositories/` — Data access layer (e.g., user-repository.ts)
+- `models/` — Data models/entities (e.g., User.ts)
+- `utils/` — Helper functions and utilities
+- `tests/` — Unit tests
+- `main.ts` — Application entry point
 
 ## Adding New Routes
-1. **Define Domain Model:**
-   - Add or update models/entities in `domain/` (e.g. `Product.ts`).
+1. **Define Data Model:**
+   - Add or update entities in `models/` (e.g. `Product.ts`).
 
-2. **Implement Business Logic:**
-   - Add services or use cases in `application/` (e.g. `ProductService.ts`).
+2. **Implement Data Access:**
+   - Add repositories in `repositories/` (e.g. `ProductRepository.ts`).
 
-3. **Implement Data Access:**
-   - Add repositories or integrations in `infrastructure/` (e.g. `ProductRepository.ts`).
+3. **Implement Business Logic:**
+   - Add services in `services/` (e.g. `ProductService.ts`).
 
-4. **Register Dependencies:**
-   - Use `composition/` to wire up dependencies and configure DI containers if needed.
+4. **Create Routes:**
+   - Add a new file in `routes/`, e.g. `products-routes.ts`.
+   - Export an Express Router with your endpoints, calling services from `services/`.
 
-5. **Create Router:**
-   - Add a new file in `presentation/`, e.g. `productsRouter.ts`.
-   - Export an Express Router with your endpoints, calling the logic from `application/`.
+5. **Register the Routes:**
+   - Import your router in `main.ts`.
+   - Use `app.use('/products', productsRouter)` to register it.
 
-6. **Register the Router:**
-   - Import your router in `presentation/app.ts`.
-   - Use `app.use(yourRouter)` to register it.
-
-7. **Document the Route:**
-    - Add comments or documentation as needed.
+6. **Add Tests:**
+   - Add unit tests in `tests/` for services and routes.
 
 ## Running Backend & Frontend Together
 Use `npm run dev` from the project root to start both backend and frontend with hot reload.
