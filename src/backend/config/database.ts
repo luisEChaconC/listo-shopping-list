@@ -1,5 +1,5 @@
-import { DataSource } from 'typeorm';
-import { UserDTO } from '../application/dto/UserDTO';
+import { DataSource } from "typeorm";
+import { User } from "../models/User";
 
 const dbHost = process.env.DB_HOST;
 const dbPort = process.env.DB_PORT;
@@ -14,15 +14,13 @@ if (!dbPassword) throw new Error('DB_PASSWORD environment variable is required')
 if (!dbName) throw new Error('DB_NAME environment variable is required');
 
 export const AppDataSource = new DataSource({
-    type: 'postgres',
+    type: "postgres",
     host: dbHost,
     port: parseInt(dbPort),
     username: dbUsername,
     password: dbPassword,
     database: dbName,
-    synchronize: false,
+    synchronize: true,  // For development; use migrations in production
     logging: false,
-    entities: [UserDTO],
-    subscribers: [],
-    migrations: [],
+    entities: [User],
 });

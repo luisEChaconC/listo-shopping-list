@@ -1,20 +1,25 @@
-import { SignupService } from '../application/signup-service';
-import { UserRepository } from '../domain/user';
+import { SignupService } from '../services/signup-service';
 import * as bcrypt from 'bcrypt';
 
 jest.mock('bcrypt', () => ({
     hash: jest.fn(),
 }));
 
+const mockUserRepository = {
+    findByEmail: jest.fn(),
+    create: jest.fn(),
+};
+
+jest.mock('../repositories/user-repository', () => ({
+    UserRepository: jest.fn().mockImplementation(() => mockUserRepository),
+}));
+
 describe('SignupService', () => {
-    let mockUserRepository: jest.Mocked<UserRepository>;
     let signupService: SignupService;
 
     beforeEach(() => {
-        mockUserRepository = {
-            create: jest.fn(),
-        } as jest.Mocked<UserRepository>;
-        signupService = new SignupService(mockUserRepository);
+        jest.clearAllMocks();
+        signupService = new SignupService();
     });
 
     it('should hash the password and create a user successfully', async () => {
@@ -23,6 +28,7 @@ describe('SignupService', () => {
         const mockUser = { id: '1', name: 'John', email: 'john@example.com', password: hashedPassword };
 
         (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
+        mockUserRepository.findByEmail.mockResolvedValue(null);
         mockUserRepository.create.mockResolvedValue(mockUser);
 
         const result = await signupService.register(userData);
@@ -41,6 +47,7 @@ describe('SignupService', () => {
         const error = new Error('Database error');
 
         (bcrypt.hash as jest.Mock).mockResolvedValue('hashedpassword');
+        mockUserRepository.findByEmail.mockResolvedValue(null);
         mockUserRepository.create.mockRejectedValue(error);
 
         await expect(signupService.register(userData)).rejects.toThrow('Database error');
