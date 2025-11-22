@@ -44,8 +44,6 @@
     "@types/pg": "^8.15.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/swagger-jsdoc": "^6.0.4",
-    "@types/swagger-ui-express": "^4.1.8",
     "concurrently": "^8.2.2",
     "eslint": "^9.31.0",
     "eslint-config-next": "16.0.1",
@@ -64,7 +62,9 @@
   },
   "dependencies": {
     "@next/env": "^16.0.3",
+    "@types/cookie-parser": "^1.4.10",
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
@@ -77,8 +77,6 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "reflect-metadata": "^0.2.2",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
     "sweetalert2": "^11.26.3",
     "typeorm": "^0.3.27"
   }

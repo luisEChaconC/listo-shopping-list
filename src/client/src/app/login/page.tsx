@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { login } from '../../api/auth/authentication'
+import { AuthStorage } from '../../utils/auth-storage'
+import { NotificationService } from '../../utils/notifications'
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -12,13 +15,17 @@ export default function Login() {
         e.preventDefault()
         setIsLoading(true)
 
-        // TODO: Implement login logic
-        console.log('Login attempt:', { email, password })
-
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 1000)
+        const result = await login({ email, password })
+        if (result.success && result.token) {
+            AuthStorage.setToken(result.token)
+            AuthStorage.setUser(result.user)
+            NotificationService.showSuccess('Login successful!', 'Welcome back.').then(() => {
+                window.location.href = "/"
+            })
+        } else {
+            NotificationService.showError('Login failed', result.error || 'Invalid credentials.')
+        }
+        setIsLoading(false)
     }
 
     return (
