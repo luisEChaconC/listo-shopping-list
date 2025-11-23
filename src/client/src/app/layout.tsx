@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import './globals.css'
+import React from "react";
+import '@fortawesome/fontawesome-svg-core/styles.css';
+import { config } from '@fortawesome/fontawesome-svg-core';
+
+config.autoAddCss = false;
 
 export const metadata: Metadata = {
   title: "Listo Shopping List",
