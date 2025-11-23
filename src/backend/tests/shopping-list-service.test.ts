@@ -2,6 +2,7 @@ import { ShoppingListService } from '../services/shopping-list-service';
 
 const mockShoppingListRepository = {
     findByUserId: jest.fn(),
+    create: jest.fn(),
 };
 
 jest.mock('../repositories/shopping-list-repository', () => ({
@@ -71,4 +72,42 @@ describe('ShoppingListService', () => {
             await expect(shoppingListService.getShoppingListsByUserId('user123')).rejects.toThrow('Database connection failed');
         });
     });
-});
+
+    describe('createShoppingList', () => {
+        it('should create a new shopping list successfully', async () => {
+            const mockCreatedList = {
+                id: 'new-list-id',
+                name: 'My New List',
+                user_id: 'user123',
+                is_completed: false,
+                added_at: new Date(),
+            };
+
+            const expectedResult = {
+                id: 'new-list-id',
+                title: 'My New List',
+                productList: []
+            };
+
+            mockShoppingListRepository.create.mockResolvedValue(mockCreatedList);
+
+            const result = await shoppingListService.createShoppingList('My New List', 'user123');
+
+            expect(mockShoppingListRepository.create).toHaveBeenCalledWith('My New List', 'user123');
+            expect(result).toEqual(expectedResult);
+        });
+
+        it('should handle repository errors during creation', async () => {
+            const error = new Error('Database connection failed');
+            mockShoppingListRepository.create.mockRejectedValue(error);
+
+            await expect(shoppingListService.createShoppingList('Test List', 'user123')).rejects.toThrow('Database connection failed');
+        });
+
+        it('should handle duplicate name errors', async () => {
+            const error = new Error('Shopping list with this name already exists');
+            mockShoppingListRepository.create.mockRejectedValue(error);
+
+            await expect(shoppingListService.createShoppingList('Duplicate List', 'user123')).rejects.toThrow('Shopping list with this name already exists');
+        });
+    });});

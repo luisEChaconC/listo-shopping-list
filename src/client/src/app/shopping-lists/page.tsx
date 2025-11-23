@@ -3,40 +3,57 @@
 
 import React, { useEffect, useState } from 'react';
 import ShoppingListCard from './components/ShoppingListCard'
+import NewListModal from './components/NewListModal'
+import { getShoppingLists, createShoppingList, ShoppingList } from '../../api/shopping-lists'
+import { NotificationService } from '../../utils/notifications'
 
-async function getShoppingLists() {
-    // Simula una llamada a la base de datos/API
-    await new Promise(res => setTimeout(res, 500))
-    return [
-        {
-            id: '1',
-            title: 'Weekly Groceries',
-            productList: ['Milk', 'Eggs', 'Bread', 'Bananas'],
-        },
-        {
-            id: '2',
-            title: 'BBQ Party',
-            productList: ['Steak', 'Corn', 'Soda', 'Chips'],
-        },
-        {
-            id: '3',
-            title: 'Pharmacy',
-            productList: ['Aspirin', 'Bandages', 'Vitamins'],
-        },
-        {
-            id: '4',
-            title: 'Office Supplies',
-            productList: ['Pens', 'Paper', 'Stapler', 'Markers', 'Folders', 'Highlighters', 'Tape', 'Notebooks'],
-        },
-    ]
-}
+export default function ShoppingListsPage() {
+    const [lists, setLists] = useState<ShoppingList[]>([])
+    const [loading, setLoading] = useState(true)
+    const [modalOpen, setModalOpen] = useState(false)
 
-export default async function ShoppingListsPage() {
-    const lists = await getShoppingLists()
+    const handleCreateList = async (name: string) => {
+        const result = await createShoppingList(name);
+        if (result.success && result.shoppingList) {
+            // Add the new list to the current lists
+            setLists(prev => [result.shoppingList!, ...prev]);
+            NotificationService.showSuccess('Shopping list created successfully!');
+        } else if (result.error) {
+            NotificationService.showError('Error creating shopping list', result.error);
+        }
+        setModalOpen(false);
+    }
+
+    useEffect(() => {
+        const fetchShoppingLists = async () => {
+            const result = await getShoppingLists()
+            if (result.success && result.shoppingLists) {
+                setLists(result.shoppingLists)
+            } else if (result.error) {
+                NotificationService.showError('Error loading shopping lists', result.error)
+            }
+            setLoading(false)
+        }
+
+        fetchShoppingLists()
+    }, [])
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-10 px-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+                <p className="mt-4 text-gray-600">Loading shopping lists...</p>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
-            {newShoppingListModal({ isOpen: modalOpen, onClose: () => setModalOpen(false), onCreate: handleCreateList })}
+            <NewListModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onCreate={handleCreateList}
+            />
             <div className="w-full max-w-4xl">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-900">My Shopping Lists</h1>

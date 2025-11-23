@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, Unique } from "typeorm";
 import { User } from "./User";
 import { ShoppingListProduct } from "./ShoppingListProduct";
 
 @Entity('products')
+@Unique(["user_id", "name"])
 export class Product {
     @PrimaryGeneratedColumn("uuid")
     id!: string;

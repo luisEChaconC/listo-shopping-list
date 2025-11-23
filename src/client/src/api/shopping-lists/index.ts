@@ -17,3 +17,24 @@ export async function getShoppingLists(): Promise<{ success: boolean; shoppingLi
         return { success: false, error: error instanceof Error ? error.message : "Failed to fetch shopping lists" };
     }
 }
+
+export async function createShoppingList(name: string): Promise<{ success: boolean; shoppingList?: ShoppingList; error?: string }> {
+    try {
+        const res = await authenticatedFetch(`${API_URL}/shopping-lists`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name }),
+        });
+        if (res.ok) {
+            const data = await res.json();
+            return { success: true, shoppingList: data.shoppingList };
+        } else {
+            const data = await res.json();
+            return { success: false, error: data.error || "Failed to create shopping list" };
+        }
+    } catch (error) {
+        return { success: false, error: error instanceof Error ? error.message : "Failed to create shopping list" };
+    }
+}
