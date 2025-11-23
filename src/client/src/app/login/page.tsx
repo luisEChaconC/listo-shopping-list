@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { login } from '../../api/auth/authentication'
 import { AuthStorage } from '../../utils/auth-storage'
 import { NotificationService } from '../../utils/notifications'
@@ -10,6 +11,31 @@ export default function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const searchParams = useSearchParams()
+    const router = useRouter()
+
+    useEffect(() => {
+        const error = searchParams.get('error')
+        if (error) {
+            let message = ''
+            switch (error) {
+                case 'unauthorized':
+                    message = 'You need to log in to access this page.'
+                    break
+                case 'invalid_token':
+                    message = 'Your session is invalid. Please log in again.'
+                    break
+                case 'network':
+                    message = 'Network error occurred. Please try again.'
+                    break
+                default:
+                    message = 'An error occurred. Please try again.'
+            }
+            NotificationService.showError('Error', message).then(() => {
+                router.replace('/login')
+            })
+        }
+    }, [searchParams, router])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()

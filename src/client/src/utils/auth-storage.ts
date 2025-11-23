@@ -3,24 +3,37 @@ export class AuthStorage {
     private static USER_KEY = 'user';
 
     static setToken(token: string) {
-        localStorage.setItem(this.TOKEN_KEY, token);
+        document.cookie = `${this.TOKEN_KEY}=${token}; path=/; max-age=86400; samesite=lax; secure=false`;
     }
 
     static getToken(): string | null {
-        return localStorage.getItem(this.TOKEN_KEY);
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === this.TOKEN_KEY) {
+                return value;
+            }
+        }
+        return null;
     }
 
-    static setUser(user: any) {
-        localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    static async setUser(user: any) {
+        document.cookie = `${this.USER_KEY}=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=86400; samesite=lax; secure=false`;
     }
 
-    static getUser(): any {
-        const user = localStorage.getItem(this.USER_KEY);
-        return user ? JSON.parse(user) : null;
+    static async getUser(): Promise<any> {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === this.USER_KEY) {
+                return JSON.parse(decodeURIComponent(value));
+            }
+        }
+        return null;
     }
 
-    static clear() {
-        localStorage.removeItem(this.TOKEN_KEY);
-        localStorage.removeItem(this.USER_KEY);
+    static async clear() {
+        document.cookie = `${this.TOKEN_KEY}=; path=/; max-age=0`;
+        document.cookie = `${this.USER_KEY}=; path=/; max-age=0`;
     }
 }

@@ -8,10 +8,13 @@ export default function Header() {
     const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
-        const user = AuthStorage.getUser();
-        if (user) {
-            setUser(user);
-        }
+        const fetchUser = async () => {
+            const user = await AuthStorage.getUser();
+            if (user) {
+                setUser(user);
+            }
+        };
+        fetchUser();
     }, []);
 
     return (
