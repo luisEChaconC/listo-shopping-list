@@ -19,8 +19,8 @@ export default function Home() {
   }, [searchParams, router])
 
   return (
-    <Layout>
+    <>
       Hello World
-    </Layout>
+    </>
   );
 }

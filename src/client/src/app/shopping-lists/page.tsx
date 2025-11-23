@@ -1,37 +1,38 @@
 
-"use client"
+'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ShoppingListCard from './components/ShoppingListCard'
-import newShoppingListModal from './components/NewListModal'
-import { ShoppingList } from './types'
 
 async function getShoppingLists() {
+    // Simula una llamada a la base de datos/API
     await new Promise(res => setTimeout(res, 500))
-    return []
+    return [
+        {
+            id: '1',
+            title: 'Weekly Groceries',
+            productList: ['Milk', 'Eggs', 'Bread', 'Bananas'],
+        },
+        {
+            id: '2',
+            title: 'BBQ Party',
+            productList: ['Steak', 'Corn', 'Soda', 'Chips'],
+        },
+        {
+            id: '3',
+            title: 'Pharmacy',
+            productList: ['Aspirin', 'Bandages', 'Vitamins'],
+        },
+        {
+            id: '4',
+            title: 'Office Supplies',
+            productList: ['Pens', 'Paper', 'Stapler', 'Markers', 'Folders', 'Highlighters', 'Tape', 'Notebooks'],
+        },
+    ]
 }
 
-export default function ShoppingListsPage() {
-    const [lists, setLists] = useState<ShoppingList[]>([])
-    const [modalOpen, setModalOpen] = useState(false)
-    React.useEffect(() => {
-        (async () => {
-            const data = await getShoppingLists()
-            setLists(data as ShoppingList[])
-        })()
-    }, [])
-
-    const handleCreateList = async (name: string) => {
-        // Aquí deberías hacer el llamado real a la DB/API para crear la lista
-        // Simulación:
-        const newList = {
-            id: Date.now().toString(),
-            title: name,
-            productList: [],
-        }
-        setLists(prev => [newList, ...prev])
-        setModalOpen(false)
-    }
+export default async function ShoppingListsPage() {
+    const lists = await getShoppingLists()
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
