@@ -3,6 +3,8 @@ import helmet from "helmet";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+import { AppDataSource } from "./config/database";
+import authRoutes from "./routes/auth-routes";
 
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is not defined. Backend cannot start.");
@@ -18,7 +20,7 @@ app.use(express.json());
 
 // JWT middleware
 app.use((req, res, next) => {
-  if (req.path === "/health") return next();
+  if (req.path === "/health" || req.path.startsWith("/auth")) return next();
   const authHeader = req.headers["authorization"];
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Missing or invalid Authorization header" });
@@ -37,8 +39,16 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-const PORT = process.env.PORT || 4000;
+// Mount routes
+app.use("/auth", authRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+const PORT = process.env.BACKEND_PORT || 3001;
+
+AppDataSource.initialize()
+  .then(() => {
+    console.log("Database connected");
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((error) => console.log("Database connection error:", error));
