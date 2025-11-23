@@ -4,9 +4,6 @@ import { ShoppingListService } from "../services/shopping-list-service";
 
 const router = Router();
 
-// Apply auth middleware to all routes
-router.use(authMiddleware);
-
 router.get("/", async (req: AuthRequest, res: Response) => {
     try {
         const shoppingListService = new ShoppingListService();
