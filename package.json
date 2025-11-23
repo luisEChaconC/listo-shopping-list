@@ -61,6 +61,8 @@
     "typescript-eslint": "^8.37.0"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/react-fontawesome": "^3.1.0",
     "@next/env": "^16.0.3",
     "@types/cookie-parser": "^1.4.10",
     "bcrypt": "^6.0.0",
