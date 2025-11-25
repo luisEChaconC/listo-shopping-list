@@ -9,6 +9,9 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "copy .env src\\backend\\.env >nul 2>&1 && nodemon --exec npx tsx src/backend/main.ts",
     "dev:frontend": "copy .env src\\client\\.env >nul 2>&1 && cd src/client && npx next dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "copy .env src\\backend\\.env >nul 2>&1 && nodemon --exec npx tsx src/backend/main.ts",
+    "dev:frontend": "copy .env src\\client\\.env >nul 2>&1 && cd src/client && npx next dev",
     "test": "npx jest",
     "lint": "npx eslint . --ext .js,.ts",
     "format": "prettier --write ."
@@ -27,6 +30,7 @@
   "author": "",
   "license": "ISC",
   "type": "module",
+  "type": "module",
   "bugs": {
     "url": "https://gitlab.com/de-mi-tierra/web-site/backend/issues"
   },
@@ -34,6 +38,9 @@
   "devDependencies": {
     "@eslint/js": "^9.31.0",
     "@swc/jest": "^0.2.39",
+    "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
@@ -47,15 +54,18 @@
     "concurrently": "^8.2.2",
     "eslint": "^9.31.0",
     "eslint-config-next": "16.0.1",
+    "eslint-config-next": "16.0.1",
     "globals": "^16.3.0",
     "jest": "^30.0.4",
     "nodemon": "^3.1.10",
     "prettier": "3.6.2",
     "tailwindcss": "^4",
+    "tailwindcss": "^4",
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.7.0",
     "tsx": "^4.7.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.37.0"
