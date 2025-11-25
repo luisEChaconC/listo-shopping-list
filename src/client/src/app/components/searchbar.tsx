@@ -3,7 +3,7 @@ import type { Product } from '@/models/product';
 
 interface SearchBarProps {
   items: Product[];
-  onSelect: (item: Product) => void;
+  onSelect: (item: Product, is_new: string) => void;
 }
 
 export default function SearchBar({ items, onSelect }: SearchBarProps) {
@@ -19,7 +19,7 @@ export default function SearchBar({ items, onSelect }: SearchBarProps) {
     <div className="w-full">
       <input
         type="text"
-        placeholder="Buscar..."
+        placeholder="Agregar producto..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="w-full border px-3 py-2 rounded"
@@ -36,7 +36,7 @@ export default function SearchBar({ items, onSelect }: SearchBarProps) {
             <div
               key={item.id}
               className="p-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => onSelect(item)}
+              onClick={() => onSelect(item, "No")}
             >
               {item.name}
             </div>
