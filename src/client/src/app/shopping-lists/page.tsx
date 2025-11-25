@@ -4,7 +4,8 @@
 import React, { useEffect, useState } from 'react';
 import ShoppingListCard from './components/ShoppingListCard'
 import NewListModal from './components/NewListModal'
-import { getShoppingLists, createShoppingList, ShoppingList } from '../../api/shopping-lists'
+import { getShoppingLists, createShoppingList } from '../../api/shopping-lists'
+import { ShoppingList } from './types'
 import { NotificationService } from '../../utils/notifications'
 
 export default function ShoppingListsPage() {
