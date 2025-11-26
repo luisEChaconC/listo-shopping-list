@@ -2,51 +2,87 @@
 
 import Link from 'next/link'
 import { useState } from "react";
+import React, { useEffect} from 'react';
 import { useSearchParams, useRouter } from 'next/navigation'
 import Layout from "../components/Layout";
 import { NotificationService } from "../../utils/notifications";
 import Breadcrumb from '../components/breadcrumb'
 import SearchBar from '../components/searchbar'
-import type { Product } from '@/models/product';
-import type { Product_list } from '@/models/product_list';
+import { Product } from './types'
+import { Product_list } from './types'
+import { getProducts } from '../../api/products'
+import { getListProducts } from "../../api/shop-list-products";
+
 
 export default function PageName() {
+  const searchParams = useSearchParams();
+  const id_actual_list = searchParams.get("id")!;
+
+  const [user_products_state, set_user_products_state] = useState<Product[]>([]);
+
+  const [list_asociate_products_state, set_list_asociate_products_state] = useState<Product_list[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const url = `/api/lists?id=${id_actual_list}`;
+      const resp = await fetch(url);
+
+      console.log("STATUS:", resp.status);
+      console.log("RAW RESPONSE:", await resp.text());
+    }
+
+    fetchData();
+  }, []);
+
+  useEffect(() => { 
+    const fetchProducts = async () => { 
+      const result = await getProducts(); 
+      
+      if (result.success && result.products) { 
+        set_user_products_state(result.products); 
+      } else if (result.error) { 
+        NotificationService.showError( "Error loading products", result.error ); 
+      } 
+    }; 
+    
+    fetchProducts(); 
+  }, []);
+
+  useEffect(() => {
+    const fetchListProducts = async () => {
+      const result = await getListProducts(id_actual_list); // tu list_id
+
+      if (result.success && result.items) {
+        set_list_asociate_products_state(result.items);
+      } else if (result.error) {
+        NotificationService.showError("Error loading list products", result.error);
+      }
+    };
+
+    fetchListProducts();
+  }, []);
+
+
   const breadLinks = [
     { href: '/', label: 'Home' },
-    { href: '/shoppingLists', label: 'My Shopping Lists' },
+    { href: '/shopping-lists', label: 'My Shopping Lists' },
     { href: '/shopList', label: 'Shop List' },
   ]
 
-  const user_products: Product[] = [
-    { id: "1", user_id: "", name: "Arroz", is_predefined: false },
-    { id: "2", user_id: "", name: "Leche", is_predefined: false },
-    { id: "3", user_id: "", name: "Huevos", is_predefined: false },
-    { id: "4", user_id: "", name: "Frijoles", is_predefined: false },
-    { id: "5", user_id: "102", name: "Azúcar", is_predefined: false },
-    { id: "6", user_id: "102", name: "Café", is_predefined: false }
-  ];
+  // product_map y not_list son derivados de user_products_state y list_asociate_products_state.
+  const [product_map, set_product_map] = useState<Record<string, Product>>({});
+  const [not_list, set_not_list] = useState<Product[]>([]);
 
-  const list_asociate_products: Product_list[] = [
-    { list_id: "5", product_id: "1", price: 1400, quantity: 2, unit: "kg", is_checked: false, added_at: "z" },
-    { list_id: "5", product_id: "2", price: 1200, quantity: 2, unit: "l", is_checked: true, added_at: "z" },
-    { list_id: "5", product_id: "3", price: 350, quantity: 10, unit: "", is_checked: true, added_at: "z" },
-    { list_id: "5", product_id: "5", price: 2000, quantity: 1, unit: "kg", is_checked: false, added_at: "z" }
-  ];
+  // Cuando cambian los products, recalculá product_map y not_list
+  useEffect(() => {
+    const normalized = user_products_state.map(p => ({ ...p, user_id: p.user_id ?? '' }));
 
-  //Estados para el renderizado automatico
-  const [user_products_state] = useState<Product[]>(user_products);
-  const [list_asociate_products_state, set_list_asociate_products_state] 
-  = useState<Product_list[]>(list_asociate_products);
+    const map = Object.fromEntries(normalized.map(p => [p.id, p]));
+    set_product_map(map);
 
-  //Mapeo de Productos, este se deberia hacer al entrar a la página
-  const [product_map, set_product_map] = useState<Record<string, Product>>(
-    () => Object.fromEntries(user_products.map(p => [p.id, p]))
-  );
-
-  const [not_list, set_not_list] = useState<Product[]>(() => {
-    const assocIds = new Set(list_asociate_products.map(p => p.product_id));
-    return user_products.filter(p => !assocIds.has(p.id));
-  });
+    const assocIds = new Set(list_asociate_products_state.map(p => p.product_id));
+    set_not_list(normalized.filter(p => !assocIds.has(p.id)));
+  }, [user_products_state, list_asociate_products_state]);
 
   //Función para eliminar y agregar a las listas respectivas
   function add_product(prod: Product, is_new: string) {
@@ -60,7 +96,7 @@ export default function PageName() {
       quantity: 1,
       unit: "",
       is_checked: false,
-      added_at: "z"
+      added_at: new Date()
     };
 
     set_list_asociate_products_state(prev => [...prev, new_assoc]);
@@ -72,14 +108,17 @@ export default function PageName() {
   }
 
   return (
-      <div className="min-h-screen items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div className="w-full h-16 bg-white-800 rounded-lg flex items-center">
+      <div className="min-h-screen items-center justify-center px-4 sm:px-6 lg:px-16">
+        <h1 className="text-3xl font-bold text-gray-900 mt-11 ml-10">
+          Shop List
+        </h1>
+        <div className="w-full h-16 bg-white flex items-center ml-10">
           <Breadcrumb breadLinks = {breadLinks}/>
         </div>
 
-        <div className="w-full h-16 bg-gray-200 flex items-center">
-          <h2 >ListName</h2>
-          <div>
+        <div className="w-full h-16 bg-white-200 flex items-center">
+          <h2 ></h2>
+          <div className="ml-auto p-10">
             <SearchBar
               items={not_list}
               onSelect={add_product}
@@ -118,7 +157,7 @@ export default function PageName() {
                     <td>
                       <input
                         type="text"
-                        defaultValue={item.quantity}
+                        defaultValue={item.quantity ?? ""}
                         className="text-center w-15"
                       />
                     </td>
@@ -126,7 +165,7 @@ export default function PageName() {
                     <td>
                       <input
                         type="text"
-                        defaultValue={item.unit}
+                        defaultValue={item.unit ?? ""}
                         className="text-center w-15"
                       />
                     </td>
@@ -134,7 +173,7 @@ export default function PageName() {
                     <td>
                       <input
                         type="text"
-                        defaultValue={item.price}
+                        defaultValue={item.price ?? ""}
                         className="text-center w-15"
                       />
                     </td>
