@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import { User } from "../models/User";
+import { Product } from "../models/Product";
 
 const dbHost = process.env.DB_HOST;
 const dbPort = process.env.DB_PORT;
@@ -22,5 +23,5 @@ export const AppDataSource = new DataSource({
     database: dbName,
     synchronize: true,  // For development; use migrations in production
     logging: false,
-    entities: [User],
+    entities: [User, Product],
 });
