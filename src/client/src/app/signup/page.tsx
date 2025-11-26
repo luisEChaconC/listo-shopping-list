@@ -4,6 +4,8 @@ import { useState } from 'react'
 import React from 'react'
 import { signup } from '../../api/auth/authentication'
 import { NotificationService } from '../../utils/notifications'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
 export default function SignUp() {
     const [fullName, setFullName] = useState('')
@@ -129,7 +131,7 @@ export default function SignUp() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-black hover:bg-gray-800 disabled:bg-gray-400 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                            className="w-full bg-black hover:bg-gray-800 disabled:bg-gray-400 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 flex items-center justify-center gap-2"
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center">
@@ -137,10 +139,35 @@ export default function SignUp() {
                                     Creating account...
                                 </div>
                             ) : (
-                                'Create account'
+                                <>
+                                    <FontAwesomeIcon icon={faUserPlus} />
+                                    Create account
+                                </>
                             )}
                         </button>
                     </form>
+
+                    {/* Divider */}
+                    <div className="mt-8">
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-gray-300" />
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-2 bg-white text-gray-500">Already have an account?</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Login Link */}
+                    <div className="mt-6">
+                        <a
+                            href="/login"
+                            className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 items-center gap-2"
+                        >
+                            Sign in
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
