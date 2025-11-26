@@ -65,6 +65,15 @@ describe('ProductService', () => {
 
             expect(mockProductRepository.create).not.toHaveBeenCalled();
         });
+
+        it('should throw error when product already exists for user', async () => {
+            mockProductRepository.create.mockRejectedValue(new Error('Product already exists'));
+
+            await expect(productService.createProduct({
+                name: 'My Custom Product',
+                user_id: 'user-123',
+            })).rejects.toThrow('Product already exists');
+        });
     });
     describe('getUserProducts', () => {
         it('should return formatted products for a user including predefined ones', async () => {
