@@ -5,6 +5,9 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { AppDataSource } from "./config/database";
 import authRoutes from "./routes/auth-routes";
+import userRoutes from "./routes/user-routes";
+import shoppingListRoutes from "./routes/shopping-list-routes";
+import { authMiddleware } from "./middleware/auth-middleware";
 
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is not defined. Backend cannot start.");
@@ -18,29 +21,22 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// JWT middleware
-app.use((req, res, next) => {
-  if (req.path === "/health" || req.path.startsWith("/auth")) return next();
-  const authHeader = req.headers["authorization"];
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Missing or invalid Authorization header" });
-  }
-  const token = authHeader.split(" ")[1];
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET as string);
-    (req as any).user = payload;
-    next();
-  } catch {
-    return res.status(401).json({ error: "Invalid token" });
-  }
-});
-
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
+// Global auth middleware for all routes except /health and /auth
+app.use((req, res, next) => {
+  if (req.path === '/health' || req.path.startsWith('/auth')) {
+    return next();
+  }
+  authMiddleware(req, res, next);
+});
+
 // Mount routes
 app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
+app.use("/shopping-lists", shoppingListRoutes);
 
 const PORT = process.env.BACKEND_PORT || 3001;
 
