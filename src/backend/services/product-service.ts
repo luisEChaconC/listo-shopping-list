@@ -42,4 +42,22 @@ export class ProductService {
             user_id: product.user_id
         }));
     }
+
+    async deleteUserProduct(productId: string, userId: string): Promise<void> {
+        const product = await this.productRepository.findById(productId);
+
+        if (!product) {
+            throw new Error("Product not found");
+        }
+
+        if (product.is_predefined) {
+            throw new Error("Cannot delete predefined products");
+        }
+
+        if (product.user_id !== userId) {
+            throw new Error("Product is not owned by the user");
+        }
+
+        await this.productRepository.delete(productId);
+    }
 }
