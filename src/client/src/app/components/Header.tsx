@@ -15,7 +15,7 @@ export default function Header() {
         <header className="w-full bg-gray-100 text-gray-700 py-4 px-6 flex justify-between items-center">
             <a href="/" className="text-2xl font-bold hover:text-gray-600 transition-colors">Listo Shopping List</a>
             <nav className="flex gap-6 items-center">
-                <a href="/products" className="hover:underline flex items-center gap-2">
+                <a href="/product-catalog" className="hover:underline flex items-center gap-2">
                     <FontAwesomeIcon icon={faShoppingCart} />
                     Products
                 </a>
