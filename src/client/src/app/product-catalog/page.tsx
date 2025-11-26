@@ -104,6 +104,7 @@ export default function ProductCatalog() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onCreate={handleCreateProduct}
+                existingProducts={products}
             />
         </div>
     )
