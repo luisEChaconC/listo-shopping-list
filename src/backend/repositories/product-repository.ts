@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { Repository} from "typeorm";
 import { AppDataSource } from "../config/database";
 import { Product } from "../models/Product";
 
@@ -7,6 +7,21 @@ export class ProductRepository {
 
     constructor() {
         this.repository = AppDataSource.getRepository(Product);
+    }
+
+    async create(product: Omit<Product, "id">): Promise<Product> {
+        const allProducts = await this.findByUserId(product.user_id!);
+
+        const existingProduct = allProducts.find(
+            p => p.name.toLowerCase() === product.name.toLowerCase()
+        );
+
+        if (existingProduct) {
+            throw new Error("Product already exists");
+        }
+
+        const newProduct = this.repository.create(product);
+        return await this.repository.save(newProduct);
     }
 
     async findByUserId(userId: string): Promise<Product[]> {

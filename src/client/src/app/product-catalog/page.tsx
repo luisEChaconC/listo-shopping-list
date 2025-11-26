@@ -3,28 +3,41 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { getProducts } from '../../api/products'
+import { getProducts, createProduct } from '../../api/products'
 import { Product } from './types'
 import { NotificationService } from '../../utils/notifications'
+import NewProductModal from './components/NewProductModal'
 
 export default function ProductCatalog() {
     const [products, setProducts] = useState<Product[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
+    const fetchProducts = async () => {
+        const result = await getProducts()
+        if (result.success && result.products) {
+            setProducts(result.products)
+        } else if (result.error) {
+            NotificationService.showError('Error loading products', result.error)
+        }
+        setLoading(false)
+    }
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            const result = await getProducts()
-            if (result.success && result.products) {
-                setProducts(result.products)
-            } else if (result.error) {
-                NotificationService.showError('Error loading products', result.error)
-            }
-            setLoading(false)
-        }
-
         fetchProducts()
     }, [])
+
+    const handleCreateProduct = async (name: string) => {
+        const result = await createProduct({ name })
+        if (result.success && result.product) {
+            NotificationService.showSuccess('Success!', `Product "${result.product.name}" created successfully`)
+            setIsModalOpen(false)
+            fetchProducts()
+        } else {
+            NotificationService.showError('Error', result.error || 'Failed to create product')
+        }
+    }
 
     const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -44,17 +57,26 @@ export default function ProductCatalog() {
             <div className="w-full max-w-4xl">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-900">My saved products</h1>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <FontAwesomeIcon icon={faSearch} className="h-5 w-5 text-gray-400" />
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 font-semibold transition-colors duration-200 flex items-center gap-2"
+                        >
+                            <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
+                            Add Product
+                        </button>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <FontAwesomeIcon icon={faSearch} className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Product name"
+                                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                         </div>
-                        <input
-                            type="text"
-                            placeholder="Product name"
-                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
                     </div>
                 </div>
                 {filteredProducts.length === 0 ? (
@@ -78,6 +100,12 @@ export default function ProductCatalog() {
                     </div>
                 )}
             </div>
+            <NewProductModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onCreate={handleCreateProduct}
+                existingProducts={products}
+            />
         </div>
     )
 }
