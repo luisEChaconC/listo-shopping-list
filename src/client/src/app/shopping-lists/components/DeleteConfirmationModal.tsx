@@ -11,11 +11,11 @@ export default function DeleteConfirmationModal({ isOpen, onClose, onConfirm, li
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 px-4">
             <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
                 <h2 className="text-xl font-bold mb-4 text-gray-900">Delete Shopping List</h2>
-                <p className="text-gray-600 mb-6">
-                    Are you sure you want to delete <span className="font-semibold">&quot;{listName}&quot;</span>? This action cannot be undone.
+                <p className="text-gray-600 mb-6 break-words">
+                    Are you sure you want to delete <span className="font-semibold break-words">&quot;{listName}&quot;</span>? This action cannot be undone.
                 </p>
                 <div className="flex justify-end gap-2">
                     <button
