@@ -3,6 +3,8 @@ import { ShoppingListService } from '../services/shopping-list-service';
 const mockShoppingListRepository = {
     findByUserId: jest.fn(),
     create: jest.fn(),
+    findById: jest.fn(),
+    delete: jest.fn(),
 };
 
 jest.mock('../repositories/shopping-list-repository', () => ({
@@ -110,4 +112,53 @@ describe('ShoppingListService', () => {
 
             await expect(shoppingListService.createShoppingList('Duplicate List', 'user123')).rejects.toThrow('Shopping list with this name already exists');
         });
-    });});
+    });
+
+    describe('deleteShoppingList', () => {
+        it('should delete a shopping list when user is the owner', async () => {
+            const mockShoppingList = {
+                id: 'list123',
+                name: 'My List',
+                user_id: 'user123',
+                is_completed: false,
+                added_at: new Date(),
+            };
+
+            mockShoppingListRepository.findById.mockResolvedValue(mockShoppingList);
+            mockShoppingListRepository.delete.mockResolvedValue(undefined);
+
+            await shoppingListService.deleteShoppingList('list123', 'user123');
+
+            expect(mockShoppingListRepository.findById).toHaveBeenCalledWith('list123');
+            expect(mockShoppingListRepository.delete).toHaveBeenCalledWith('list123');
+        });
+
+        it('should throw error when shopping list does not exist', async () => {
+            mockShoppingListRepository.findById.mockResolvedValue(null);
+
+            await expect(shoppingListService.deleteShoppingList('nonexistent', 'user123'))
+                .rejects.toThrow('Shopping list not found');
+
+            expect(mockShoppingListRepository.findById).toHaveBeenCalledWith('nonexistent');
+            expect(mockShoppingListRepository.delete).not.toHaveBeenCalled();
+        });
+
+        it('should throw error when user is not the owner', async () => {
+            const mockShoppingList = {
+                id: 'list123',
+                name: 'Someone Else List',
+                user_id: 'otherUser',
+                is_completed: false,
+                added_at: new Date(),
+            };
+
+            mockShoppingListRepository.findById.mockResolvedValue(mockShoppingList);
+
+            await expect(shoppingListService.deleteShoppingList('list123', 'user123'))
+                .rejects.toThrow('Shopping list does not belong to the user');
+
+            expect(mockShoppingListRepository.findById).toHaveBeenCalledWith('list123');
+            expect(mockShoppingListRepository.delete).not.toHaveBeenCalled();
+        });
+    });
+});
