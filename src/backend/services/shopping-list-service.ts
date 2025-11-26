@@ -15,4 +15,13 @@ export class ShoppingListService {
             productList: list.shoppingListProducts?.map(slp => slp.product.name) || []
         }));
     }
+
+    async createShoppingList(name: string, userId: string) {
+        const shoppingList = await this.shoppingListRepository.create(name, userId);
+        return {
+            id: shoppingList.id,
+            title: shoppingList.name,
+            productList: []
+        };
+    }
 }
