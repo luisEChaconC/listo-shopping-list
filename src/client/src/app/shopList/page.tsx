@@ -72,7 +72,6 @@ export default function PageName() {
   }
 
   return (
-    <Layout>
       <div className="min-h-screen items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="w-full h-16 bg-white-800 rounded-lg flex items-center">
           <Breadcrumb breadLinks = {breadLinks}/>
@@ -153,6 +152,5 @@ export default function PageName() {
           </table>
         </div>
       </div>
-    </Layout>  
   )
 }
