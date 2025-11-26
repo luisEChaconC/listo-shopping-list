@@ -6,6 +6,7 @@ import "dotenv/config";
 import { AppDataSource } from "./config/database";
 import authRoutes from "./routes/auth-routes";
 import userRoutes from "./routes/user-routes";
+import productRoutes from "./routes/product-routes";
 import { authMiddleware } from "./middleware/auth-middleware";
 
 if (!process.env.JWT_SECRET) {
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
 // Mount routes
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
+app.use("/products", productRoutes);
 
 const PORT = process.env.BACKEND_PORT || 3001;
 
