@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth-routes";
 import userRoutes from "./routes/user-routes";
 import shoppingListRoutes from "./routes/shopping-list-routes";
 import productRoutes from "./routes/product-routes";
+import shoppingListProductRoutes from "./routes/shopping-list-product-routes"
 import { authMiddleware } from "./middleware/auth-middleware";
 
 if (!process.env.JWT_SECRET) {
@@ -39,6 +40,7 @@ app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/shopping-lists", shoppingListRoutes);
 app.use("/products", productRoutes);
+app.use("/shopping-list-products", shoppingListProductRoutes);
 
 const PORT = process.env.BACKEND_PORT || 3001;
 

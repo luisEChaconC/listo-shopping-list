@@ -14,7 +14,7 @@ export default function ShoppingListCard({ id, title, productList }: { id: strin
             transition={{ duration: 0.4 }}
             className="bg-white rounded-xl shadow-md p-6 cursor-pointer h-64 flex flex-col w-full max-w-xs"
         >
-            <Link href={`/shopping-lists/${id}`} className="flex-1 flex flex-col">
+            <Link href={{ pathname: "/shopList", query: { id } }} className="flex-1 flex flex-col">
                 <h2 className="text-xl font-bold text-gray-900 mb-2 truncate">{title}</h2>
                 <ul className="text-gray-400 text-sm space-y-1">
                     {displayProducts.map((item, idx) => (
