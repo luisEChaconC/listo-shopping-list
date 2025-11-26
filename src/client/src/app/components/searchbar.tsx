@@ -26,21 +26,24 @@ export default function SearchBar({ items, onSelect }: SearchBarProps) {
     <div className="relative">
       <input
         type="text"
-        placeholder="Agregar producto..."
+        placeholder="Find and add a product by click..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="border px-3 py-2 rounded"
+        className="w-64 border px-3 py-2 rounded"
       />
 
       {/* Rellenamos las sugerencias*/}
       {query !== "" && (
-        <div className="absolute top-full left-0 border mt-2 rounded max-h-60 overflow-y-auto bg-white">
+        <div className="w-64 absolute top-full left-0 border mt-2 rounded max-h-60 overflow-y-auto bg-white">
           {filtered.length === 0 && (
             <div
               className="p-2 hover:bg-gray-100 cursor-pointer"
               onClick={() => {onSelect(itemDefault, query); setQuery("")}}
             >
               {query}
+              <span className="block text-xs text-gray-500">
+                (Click to create and add as a new product)
+              </span>
             </div>
           )}
 

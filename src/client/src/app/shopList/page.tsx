@@ -13,41 +13,40 @@ import { Product_list } from './types'
 import { getProducts } from '../../api/products'
 import { getListProducts } from "../../api/shop-list-products";
 
-
 export default function PageName() {
   const searchParams = useSearchParams();
-  const id_actual_list = searchParams.get("id")!;
+  const currentListId = searchParams.get("id")!;
 
-  const [user_products_state, set_user_products_state] = useState<Product[]>([]);
-  const [list_asociate_products_state, set_list_asociate_products_state] = useState<Product_list[]>([]);
+  const [userProducts, setUserProducts] = useState<Product[]>([]);
+  const [listAssociatedProducts, setListAssociatedProducts] = useState<Product_list[]>([]);
 
-  useEffect(() => { 
-    const fetchProducts = async () => { 
-      const result = await getProducts(); 
-      
-      if (result.success && result.products) { 
-        set_user_products_state(result.products); 
-      } else if (result.error) { 
-        NotificationService.showError("Error loading products", result.error); 
-      } 
-    }; 
-    
-    fetchProducts(); 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const result = await getProducts();
+
+      if (result.success && result.products) {
+        setUserProducts(result.products);
+      } else if (result.error) {
+        NotificationService.showError("Error loading products", result.error);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   useEffect(() => {
     const fetchListProducts = async () => {
-      const result = await getListProducts(id_actual_list);
+      const result = await getListProducts(currentListId);
 
       if (result.success && result.items) {
-        set_list_asociate_products_state(result.items);
+        setListAssociatedProducts(result.items);
       } else if (result.error) {
         NotificationService.showError("Error loading list products", result.error);
       }
     };
 
     fetchListProducts();
-  }, [id_actual_list]);
+  }, [currentListId]);
 
   const breadLinks = [
     { href: '/', label: 'Home' },
@@ -55,27 +54,28 @@ export default function PageName() {
     { href: '/shopList', label: 'Shop List' }
   ];
 
-  const product_map = useMemo(() => {
-    const normalized = user_products_state.map(p => ({
+  //Los Memo evitan que ocurra una cascada
+  const productMap = useMemo(() => {
+    const normalized = userProducts.map(p => ({
       ...p,
-      user_id: p.user_id ?? ''
+      userId: p.user_id ?? ''
     }));
     return Object.fromEntries(normalized.map(p => [p.id, p]));
-  }, [user_products_state]);
+  }, [userProducts]);
 
-  const not_list = useMemo(() => {
-    const normalized = user_products_state.map(p => ({
+  const notList = useMemo(() => {
+    const normalized = userProducts.map(p => ({
       ...p,
-      user_id: p.user_id ?? ''
+      userId: p.user_id ?? ''
     }));
 
-    const assocIds = new Set(list_asociate_products_state.map(p => p.product_id));
+    const assocIds = new Set(listAssociatedProducts.map(p => p.product_id));
     return normalized.filter(p => !assocIds.has(p.id));
-  }, [user_products_state, list_asociate_products_state]);
+  }, [userProducts, listAssociatedProducts]);
 
-  function add_product(prod: Product, is_new: string) {
-    const new_assoc: Product_list = {
-      list_id: id_actual_list,
+  function addProduct(prod: Product, isNew: string) {
+    const newAssoc: Product_list = {
+      list_id: currentListId,
       product_id: prod.id,
       price: 0,
       quantity: 1,
@@ -84,7 +84,7 @@ export default function PageName() {
       added_at: new Date()
     };
 
-    set_list_asociate_products_state(prev => [...prev, new_assoc]);
+    setListAssociatedProducts(prev => [...prev, newAssoc]);
   }
 
   return (
@@ -93,15 +93,15 @@ export default function PageName() {
           Shop List
         </h1>
         <div className="w-full h-16 bg-white flex items-center ml-10">
-          <Breadcrumb breadLinks = {breadLinks}/>
+          <Breadcrumb breadLinks={breadLinks}/>
         </div>
 
         <div className="w-full h-16 bg-white-200 flex items-center">
           <h2 ></h2>
           <div className="ml-auto p-10">
             <SearchBar
-              items={not_list}
-              onSelect={add_product}
+              items={notList}
+              onSelect={addProduct}
             />
           </div>
         </div>
@@ -117,57 +117,57 @@ export default function PageName() {
                 <th className="w-1/3"> </th>
               </tr>
             </thead>
-              <tbody>
-                {[...list_asociate_products_state].reverse().map((item, index) => (
-                  <tr key={index} className={
-                    index === list_asociate_products_state.length - 1
-                    ? "h-14"
-                    : "h-14 border-b-[1px]"
-                  }>
-                    <td className="text-left">
-                      <input 
-                        type="checkbox" 
-                        className="rounded-full mx-6" 
-                        defaultChecked={item.is_checked}
-                      />
-                    </td>
+            <tbody>
+              {[...listAssociatedProducts].reverse().map((item, index) => (
+                <tr key={index} className={
+                  index === listAssociatedProducts.length - 1
+                  ? "h-14"
+                  : "h-14 border-b-[1px]"
+                }>
+                  <td className="text-left">
+                    <input 
+                      type="checkbox" 
+                      className="rounded-full mx-6" 
+                      defaultChecked={item.is_checked}
+                    />
+                  </td>
 
-                    <td>{product_map[item.product_id]?.name ?? "??"}</td>
+                  <td>{productMap[item.product_id]?.name ?? "??"}</td>
 
-                    <td>
-                      <input
-                        type="text"
-                        defaultValue={item.quantity ?? ""}
-                        className="text-center w-15"
-                      />
-                    </td>
+                  <td>
+                    <input
+                      type="text"
+                      defaultValue={item.quantity ?? ""}
+                      className="text-center w-15"
+                    />
+                  </td>
 
-                    <td>
-                      <input
-                        type="text"
-                        defaultValue={item.unit ?? ""}
-                        className="text-center w-15"
-                      />
-                    </td>
+                  <td>
+                    <input
+                      type="text"
+                      defaultValue={item.unit ?? ""}
+                      className="text-center w-15"
+                    />
+                  </td>
 
-                    <td>
-                      <input
-                        type="text"
-                        defaultValue={item.price ?? ""}
-                        className="text-center w-15"
-                      />
-                    </td>
+                  <td>
+                    <input
+                      type="text"
+                      defaultValue={item.price ?? ""}
+                      className="text-center w-15"
+                    />
+                  </td>
 
-                    <td className="text-right">
-                      <button className="bg-transparent hover:bg-gray-800 text-black-700 
-                        font-semibold hover:text-white py-1 px-4 border border-black-500 
-                        hover:border-transparent rounded mx-6">
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+                  <td className="text-right">
+                    <button className="bg-transparent hover:bg-gray-800 text-black-700 
+                      font-semibold hover:text-white py-1 px-4 border border-black-500 
+                      hover:border-transparent rounded mx-6">
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       </div>
