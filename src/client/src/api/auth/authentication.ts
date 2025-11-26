@@ -80,7 +80,7 @@ export async function getCurrentUser(): Promise<{ success: boolean; user?: any; 
 }
 
 export async function authenticatedFetch(url: string, options: RequestInit = {}): Promise<Response> {
-    const token = await AuthStorage.getToken();
+    const token = AuthStorage.getToken();
     if (!token) {
         throw new Error('No token');
     }

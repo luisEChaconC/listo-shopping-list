@@ -3,6 +3,7 @@ import './globals.css'
 import React from "react";
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
+import ConditionalLayout from './components/ConditionalLayout';
 
 config.autoAddCss = false;
 
@@ -19,7 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <ConditionalLayout>
+          {children}
+        </ConditionalLayout>
       </body>
     </html>
   );

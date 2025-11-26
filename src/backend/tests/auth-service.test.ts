@@ -78,7 +78,7 @@ describe('AuthService', () => {
 
             expect(mockUserRepository.findByEmail).toHaveBeenCalledWith('john@example.com');
             expect(bcrypt.compare).toHaveBeenCalledWith('password', 'hashedpassword');
-            expect(jwt.sign).toHaveBeenCalledWith({ id: '1', email: 'john@example.com' }, 'testsecret', { expiresIn: '1h' });
+            expect(jwt.sign).toHaveBeenCalledWith({ id: '1', email: 'john@example.com', name: 'John' }, 'testsecret', { expiresIn: '1h' });
             expect(result).toEqual({ user: mockUser, token });
         });
 
@@ -116,7 +116,7 @@ describe('AuthService', () => {
 
             expect(jwt.verify).toHaveBeenCalledWith(token, 'testsecret', { ignoreExpiration: true });
             expect(mockUserRepository.findByEmail).toHaveBeenCalledWith('john@example.com');
-            expect(jwt.sign).toHaveBeenCalledWith({ id: '1', email: 'john@example.com' }, 'testsecret', { expiresIn: '1h' });
+            expect(jwt.sign).toHaveBeenCalledWith({ id: '1', email: 'john@example.com', name: 'John' }, 'testsecret', { expiresIn: '1h' });
             expect(result).toEqual({ token: newToken });
         });
 

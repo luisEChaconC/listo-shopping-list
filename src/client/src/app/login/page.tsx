@@ -46,7 +46,6 @@ export default function Login() {
         const result = await login({ email, password })
         if (result.success && result.token) {
             AuthStorage.setToken(result.token)
-            AuthStorage.setUser(result.user)
             NotificationService.showSuccess('Login successful!', 'Welcome back.').then(() => {
                 window.location.href = "/"
             })
