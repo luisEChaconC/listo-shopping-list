@@ -1,4 +1,4 @@
-import { Repository, IsNull } from "typeorm";
+import { Repository} from "typeorm";
 import { AppDataSource } from "../config/database";
 import { Product } from "../models/Product";
 
@@ -10,14 +10,13 @@ export class ProductRepository {
     }
 
     async create(product: Omit<Product, "id">): Promise<Product> {
-        const existing = await this.repository.findOne({
-            where: {
-                name: product.name,
-                user_id: product.user_id === null ? IsNull() : product.user_id
-            }
-        });
+        const allProducts = await this.findByUserId(product.user_id!);
 
-        if (existing) {
+        const existingProduct = allProducts.find(
+            p => p.name.toLowerCase() === product.name.toLowerCase()
+        );
+
+        if (existingProduct) {
             throw new Error("Product already exists");
         }
 
