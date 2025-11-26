@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { getProducts } from '../../api/products'
+import { faSearch, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+import { getProducts, deleteProduct } from '../../api/products'
 import { Product } from './types'
 import { NotificationService } from '../../utils/notifications'
 
@@ -11,6 +11,7 @@ export default function ProductCatalog() {
     const [products, setProducts] = useState<Product[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
+    const [hoveredProduct, setHoveredProduct] = useState<string | null>(null)
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -25,6 +26,16 @@ export default function ProductCatalog() {
 
         fetchProducts()
     }, [])
+
+    const handleDeleteProduct = async (productId: string, productName: string) => {
+        const result = await deleteProduct(productId)
+        if (result.success) {
+            setProducts(products.filter(p => p.id !== productId))
+            NotificationService.showSuccess('Success', `${productName} has been deleted`)
+        } else if (result.error) {
+            NotificationService.showError('Error deleting product', result.error)
+        }
+    }
 
     const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -64,14 +75,31 @@ export default function ProductCatalog() {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                         {filteredProducts.map((product) => (
-                            <div key={product.id} className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow h-20 flex flex-col justify-center">
+                            <div
+                                key={product.id}
+                                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow h-20 flex flex-col justify-center"
+                                onMouseEnter={() => setHoveredProduct(product.id)}
+                                onMouseLeave={() => setHoveredProduct(null)}
+                            >
                                 <div className="flex justify-between items-start">
                                     <div className="flex-1 min-w-0">
                                         <h3 className="text-lg font-semibold text-gray-900 truncate mb-2">{product.name}</h3>
                                     </div>
-                                    <button className="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-700 transition-colors ml-3 flex-shrink-0">
-                                        <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
-                                    </button>
+                                    <div className="flex gap-2 ml-3 flex-shrink-0">
+                                        {!product.is_predefined && (
+                                            <button
+                                                onClick={() => handleDeleteProduct(product.id, product.name)}
+                                                className={`bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-700 transition-all ${
+                                                    hoveredProduct === product.id ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
+                                                }`}
+                                            >
+                                                <FontAwesomeIcon icon={faMinus} className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                        <button className="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-700 transition-colors">
+                                            <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
