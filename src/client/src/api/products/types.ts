@@ -1,6 +1,10 @@
 export interface Product {
     id: string;
     name: string;
-    is_predefined: boolean;
     user_id: string | null;
+    is_predefined: boolean;
+}
+
+export interface CreateProductPayload {
+    name: string;
 }
