@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import React, { useEffect} from 'react';
 import { useSearchParams, useRouter } from 'next/navigation'
 import Layout from "../components/Layout";
@@ -19,20 +19,7 @@ export default function PageName() {
   const id_actual_list = searchParams.get("id")!;
 
   const [user_products_state, set_user_products_state] = useState<Product[]>([]);
-
   const [list_asociate_products_state, set_list_asociate_products_state] = useState<Product_list[]>([]);
-
-  useEffect(() => {
-    async function fetchData() {
-      const url = `/api/lists?id=${id_actual_list}`;
-      const resp = await fetch(url);
-
-      console.log("STATUS:", resp.status);
-      console.log("RAW RESPONSE:", await resp.text());
-    }
-
-    fetchData();
-  }, []);
 
   useEffect(() => { 
     const fetchProducts = async () => { 
@@ -41,7 +28,7 @@ export default function PageName() {
       if (result.success && result.products) { 
         set_user_products_state(result.products); 
       } else if (result.error) { 
-        NotificationService.showError( "Error loading products", result.error ); 
+        NotificationService.showError("Error loading products", result.error); 
       } 
     }; 
     
@@ -50,7 +37,7 @@ export default function PageName() {
 
   useEffect(() => {
     const fetchListProducts = async () => {
-      const result = await getListProducts(id_actual_list); // tu list_id
+      const result = await getListProducts(id_actual_list);
 
       if (result.success && result.items) {
         set_list_asociate_products_state(result.items);
@@ -60,37 +47,35 @@ export default function PageName() {
     };
 
     fetchListProducts();
-  }, []);
-
+  }, [id_actual_list]);
 
   const breadLinks = [
     { href: '/', label: 'Home' },
     { href: '/shopping-lists', label: 'My Shopping Lists' },
-    { href: '/shopList', label: 'Shop List' },
-  ]
+    { href: '/shopList', label: 'Shop List' }
+  ];
 
-  // product_map y not_list son derivados de user_products_state y list_asociate_products_state.
-  const [product_map, set_product_map] = useState<Record<string, Product>>({});
-  const [not_list, set_not_list] = useState<Product[]>([]);
+  const product_map = useMemo(() => {
+    const normalized = user_products_state.map(p => ({
+      ...p,
+      user_id: p.user_id ?? ''
+    }));
+    return Object.fromEntries(normalized.map(p => [p.id, p]));
+  }, [user_products_state]);
 
-  // Cuando cambian los products, recalculá product_map y not_list
-  useEffect(() => {
-    const normalized = user_products_state.map(p => ({ ...p, user_id: p.user_id ?? '' }));
-
-    const map = Object.fromEntries(normalized.map(p => [p.id, p]));
-    set_product_map(map);
+  const not_list = useMemo(() => {
+    const normalized = user_products_state.map(p => ({
+      ...p,
+      user_id: p.user_id ?? ''
+    }));
 
     const assocIds = new Set(list_asociate_products_state.map(p => p.product_id));
-    set_not_list(normalized.filter(p => !assocIds.has(p.id)));
+    return normalized.filter(p => !assocIds.has(p.id));
   }, [user_products_state, list_asociate_products_state]);
 
-  //Función para eliminar y agregar a las listas respectivas
   function add_product(prod: Product, is_new: string) {
-
-    set_not_list(prev => prev.filter(p => p.id !== prod.id));
-
     const new_assoc: Product_list = {
-      list_id: "5",
+      list_id: id_actual_list,
       product_id: prod.id,
       price: 0,
       quantity: 1,
@@ -100,11 +85,6 @@ export default function PageName() {
     };
 
     set_list_asociate_products_state(prev => [...prev, new_assoc]);
-
-    set_product_map(prev => ({
-      ...prev,
-      [prod.id]: prod
-    }));
   }
 
   return (
