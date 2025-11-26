@@ -3,12 +3,26 @@
 
 import React, { useEffect, useState } from 'react';
 import ShoppingListCard from './components/ShoppingListCard'
-import { getShoppingLists, ShoppingList } from '../../api/shopping-lists'
+import NewListModal from './components/NewListModal'
+import { getShoppingLists, createShoppingList, ShoppingList } from '../../api/shopping-lists'
 import { NotificationService } from '../../utils/notifications'
 
 export default function ShoppingListsPage() {
     const [lists, setLists] = useState<ShoppingList[]>([])
     const [loading, setLoading] = useState(true)
+    const [modalOpen, setModalOpen] = useState(false)
+
+    const handleCreateList = async (name: string) => {
+        const result = await createShoppingList(name);
+        if (result.success && result.shoppingList) {
+            // Add the new list to the current lists
+            setLists(prev => [result.shoppingList!, ...prev]);
+            NotificationService.showSuccess('Shopping list created successfully!');
+        } else if (result.error) {
+            NotificationService.showError('Error creating shopping list', result.error);
+        }
+        setModalOpen(false);
+    }
 
     useEffect(() => {
         const fetchShoppingLists = async () => {
@@ -35,15 +49,20 @@ export default function ShoppingListsPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
+            <NewListModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onCreate={handleCreateList}
+            />
             <div className="w-full max-w-4xl">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-900">My Shopping Lists</h1>
-                    <a
-                        href="/shopping-lists/create"
+                    <button
                         className="bg-black text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200"
+                        onClick={() => setModalOpen(true)}
                     >
                         New List
-                    </a>
+                    </button>
                 </div>
                 {lists.length === 0 ? (
                     <div className="w-full flex flex-col items-center justify-center py-20">
