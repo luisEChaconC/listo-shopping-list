@@ -1,6 +1,12 @@
 import { DataSource } from "typeorm";
 import { User } from "../models/User";
+import { ShoppingList } from "../models/ShoppingList";
 import { Product } from "../models/Product";
+import { ShoppingListProduct } from "../models/ShoppingListProduct";
+import * as dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 const dbHost = process.env.DB_HOST;
 const dbPort = process.env.DB_PORT;
@@ -21,7 +27,7 @@ export const AppDataSource = new DataSource({
     username: dbUsername,
     password: dbPassword,
     database: dbName,
-    synchronize: true,  // For development; use migrations in production
+    synchronize: false,
     logging: false,
-    entities: [User, Product],
+    entities: [User, ShoppingList, Product, ShoppingListProduct],
 });

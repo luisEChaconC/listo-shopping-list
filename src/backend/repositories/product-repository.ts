@@ -24,4 +24,13 @@ export class ProductRepository {
         const newProduct = this.repository.create(product);
         return await this.repository.save(newProduct);
     }
+
+    async findByUserId(userId: string): Promise<Product[]> {
+        return this.repository.find({
+            where: [
+                { user_id: userId },
+                { is_predefined: true }
+            ]
+        });
+    }
 }

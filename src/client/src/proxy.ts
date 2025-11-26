@@ -43,7 +43,6 @@ export default async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
 
     const token = request.cookies.get('token')?.value
-    const user = request.cookies.get('user')?.value
 
     if (pathname === '/login' || pathname === '/signup') {
         if (!token) return NextResponse.next()
@@ -53,9 +52,6 @@ export default async function proxy(request: NextRequest) {
         if (valid && newToken) {
             const response = NextResponse.redirect(new URL('/?message=already_logged_in', request.url))
             response.cookies.set('token', newToken, { httpOnly: false, secure: false, sameSite: 'lax' })
-            if (user) {
-                response.cookies.set('user', user, { httpOnly: false, secure: false, sameSite: 'lax' })
-            }
             return response
         }
 
@@ -76,9 +72,6 @@ export default async function proxy(request: NextRequest) {
     if (valid && newToken) {
         const response = NextResponse.next()
         response.cookies.set('token', newToken, { httpOnly: false, secure: false, sameSite: 'lax' })
-        if (user) {
-            response.cookies.set('user', user, { httpOnly: false, secure: false, sameSite: 'lax' })
-        }
         return response
     }
 

@@ -1,4 +1,4 @@
-    import { Router, Response } from "express";
+import { Router, Response } from "express";
 import { AuthRequest } from "../middleware/auth-middleware";
 import { ProductService } from "../services/product-service";
 
@@ -23,6 +23,16 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         if (error instanceof Error && error.message === 'Product name is required') {
             return res.status(400).json({ error: "Product name is required" });
         }
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.get("/", async (req: AuthRequest, res: Response) => {
+    try {
+        const productService = new ProductService();
+        const products = await productService.getUserProducts(req.user.id);
+        return res.status(200).json({ products });
+    } catch (error) {
         return res.status(500).json({ error: "Internal server error" });
     }
 });

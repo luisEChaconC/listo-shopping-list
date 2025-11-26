@@ -24,3 +24,18 @@ export async function createProduct(payload: CreateProductPayload): Promise<{ su
         return { success: false, error: error instanceof Error ? error.message : "Failed to create product" };
     }
 }
+
+export async function getProducts(): Promise<{ success: boolean; products?: any[]; error?: string }> {
+    try {
+        const res = await authenticatedFetch(`${API_URL}/products`);
+        if (res.ok) {
+            const data = await res.json();
+            return { success: true, products: data.products };
+        } else {
+            const data = await res.json();
+            return { success: false, error: data.error || "Failed to fetch products" };
+        }
+    } catch (error) {
+        return { success: false, error: error instanceof Error ? error.message : "Failed to fetch products" };
+    }
+}

@@ -2,25 +2,28 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMan
 import { User } from "./User";
 import { ShoppingListProduct } from "./ShoppingListProduct";
 
-@Entity('products')
+@Entity('shopping_lists')
 @Unique(["user_id", "name"])
-export class Product {
+export class ShoppingList {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
-
-    @Column({ type: "uuid", nullable: true })
-    user_id!: string | null;
 
     @Column({ type: "varchar", length: 100 })
     name!: string;
 
     @Column({ type: "boolean", default: false })
-    is_predefined!: boolean;
+    is_completed!: boolean;
 
-    @ManyToOne(() => User, { nullable: true })
+    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+    added_at!: Date;
+
+    @Column({ type: "uuid" })
+    user_id!: string;
+
+    @ManyToOne(() => User)
     @JoinColumn({ name: "user_id" })
-    user!: User | null;
+    user!: User;
 
-    @OneToMany(() => ShoppingListProduct, shoppingListProduct => shoppingListProduct.product)
+    @OneToMany(() => ShoppingListProduct, shoppingListProduct => shoppingListProduct.shoppingList)
     shoppingListProducts!: ShoppingListProduct[];
 }

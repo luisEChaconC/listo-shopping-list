@@ -20,7 +20,9 @@ export class ProductService {
         const product = await this.productRepository.create({
             name: data.name.trim(),
             user_id: data.user_id,
-            is_predefined: false
+            is_predefined: false,
+            user: null,
+            shoppingListProducts: []
         });
 
         return {
@@ -29,5 +31,15 @@ export class ProductService {
             user_id: product.user_id,
             is_predefined: product.is_predefined
         };
+    }
+
+    async getUserProducts(userId: string): Promise<any[]> {
+        const products = await this.productRepository.findByUserId(userId);
+        return products.map(product => ({
+            id: product.id,
+            name: product.name,
+            is_predefined: product.is_predefined,
+            user_id: product.user_id
+        }));
     }
 }
