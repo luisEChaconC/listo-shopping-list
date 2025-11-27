@@ -85,6 +85,14 @@ export default function PageName() {
     return normalized.filter(p => !assocIds.has(p.id));
   }, [userProducts, listAssociatedProducts]);
 
+  const totalPrice = useMemo(() => {
+    return listAssociatedProducts.reduce((sum, item) => {
+      const price = item.price ?? 0;
+      const quantity = item.quantity ?? 1;
+      return sum + price * quantity;
+    }, 0);
+  }, [listAssociatedProducts]);
+
   async function addProduct(prod: Product, isNew: string) {
     if(isNew == "No"){
       const newAssoc: Product_list = {
@@ -251,8 +259,14 @@ export default function PageName() {
                     <td>
                       <input
                         type="number"
+                        min="0"
                         defaultValue={item.quantity ?? ""}
                         className="text-center w-15"
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e" || e.key === "+") {
+                            e.preventDefault();
+                          }
+                        }}
                         onChange={e => updateItem(item.product_id, "quantity", e.target.value === "" ? null : Number(e.target.value))}
                       />
                     </td>
@@ -269,8 +283,14 @@ export default function PageName() {
                     <td>
                       <input
                         type="number"
+                        min="0"
                         defaultValue={item.price ?? ""}
                         className="text-center w-15"
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e" || e.key === "+") {
+                            e.preventDefault();
+                          }
+                        }}
                         onChange={e => updateItem(item.product_id, "price", e.target.value === "" ? null : Number(e.target.value))}
                       />
                     </td>
@@ -288,6 +308,12 @@ export default function PageName() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+        <div className="w-full flex justify-end mt-6">
+          <div className="bg-white rounded-lg px-6 py-4 text-right">
+            <p className="text-sm text-gray-900">Total:</p>
+            <p className="text-2xl font-bold text-gray-900">₡{totalPrice}</p>
           </div>
         </div>
       </div>
