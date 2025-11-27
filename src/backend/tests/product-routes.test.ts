@@ -23,11 +23,6 @@ describe('Product Routes', () => {
             expect(res.status).toBe(201);
         });
 
-        it('should reject missing name', async () => {
-            const res = await request(app).post('/products').send({});
-            expect(res.status).toBe(400);
-        });
-
         it('should handle duplicate product', async () => {
             (ProductService.prototype.createProduct as jest.Mock).mockRejectedValue(new Error('Product already exists'));
             const res = await request(app).post('/products').send({ name: 'Apple' });

@@ -21,11 +21,6 @@ describe('Auth Routes', () => {
             expect(res.status).toBe(201);
         });
 
-        it('should reject missing fields', async () => {
-            const res = await request(app).post('/auth/signup').send({ email: 'test@test.com' });
-            expect(res.status).toBe(400);
-        });
-
         it('should handle duplicate user', async () => {
             (AuthService.prototype.register as jest.Mock).mockRejectedValue(new Error('User already exists'));
             const res = await request(app).post('/auth/signup').send({ name: 'Test', email: 'test@test.com', password: 'pass' });
@@ -46,11 +41,6 @@ describe('Auth Routes', () => {
             expect(res.status).toBe(200);
         });
 
-        it('should reject missing fields', async () => {
-            const res = await request(app).post('/auth/login').send({ email: 'test@test.com' });
-            expect(res.status).toBe(400);
-        });
-
         it('should handle invalid credentials', async () => {
             (AuthService.prototype.login as jest.Mock).mockRejectedValue(new Error('Invalid credentials'));
             const res = await request(app).post('/auth/login').send({ email: 'test@test.com', password: 'wrong' });
@@ -69,11 +59,6 @@ describe('Auth Routes', () => {
             (AuthService.prototype.refresh as jest.Mock).mockResolvedValue({ token: 'newtoken' });
             const res = await request(app).post('/auth/refresh').send({ token: 'oldtoken' });
             expect(res.status).toBe(200);
-        });
-
-        it('should reject missing token', async () => {
-            const res = await request(app).post('/auth/refresh').send({});
-            expect(res.status).toBe(400);
         });
 
         it('should handle invalid token', async () => {

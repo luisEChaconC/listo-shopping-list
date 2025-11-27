@@ -127,5 +127,15 @@ describe('AuthService', () => {
 
             await expect(authService.refresh(token)).rejects.toThrow('Invalid token');
         });
+
+        it('should throw error when user not found during refresh', async () => {
+            const token = 'validtoken';
+            const decoded = { id: '1', email: 'john@example.com' };
+
+            (jwt.verify as jest.Mock).mockReturnValue(decoded);
+            mockUserRepository.findByEmail.mockResolvedValue(null);
+
+            await expect(authService.refresh(token)).rejects.toThrow('Invalid token');
+        });
     });
 });

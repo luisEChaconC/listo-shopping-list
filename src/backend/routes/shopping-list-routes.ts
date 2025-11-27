@@ -18,15 +18,10 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     try {
         const { name } = req.body;
 
-        if (!name || typeof name !== 'string' || name.trim().length === 0) {
-            return res.status(400).json({ error: "Name is required and must be a non-empty string" });
-        }
-
         const shoppingListService = new ShoppingListService();
         const shoppingList = await shoppingListService.createShoppingList(name.trim(), req.user!.id);
         return res.status(201).json({ shoppingList });
     } catch (error) {
-        // Handle uniqueness validation error
         if (error instanceof Error && error.message === "Shopping list with this name already exists") {
             return res.status(409).json({ error: "A shopping list with this name already exists" });
         }
@@ -37,10 +32,6 @@ router.post("/", async (req: AuthRequest, res: Response) => {
 router.delete("/:id", async (req: AuthRequest, res: Response) => {
     try {
         const { id } = req.params;
-
-        if (!id || typeof id !== 'string') {
-            return res.status(400).json({ error: "Invalid shopping list ID" });
-        }
 
         const shoppingListService = new ShoppingListService();
         await shoppingListService.deleteShoppingList(id, req.user!.id);

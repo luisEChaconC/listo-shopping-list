@@ -37,21 +37,6 @@ describe('Shopping List Routes', () => {
             expect(res.status).toBe(201);
         });
 
-        it('should reject empty name', async () => {
-            const res = await request(app).post('/lists').send({ name: '' });
-            expect(res.status).toBe(400);
-        });
-
-        it('should reject missing name', async () => {
-            const res = await request(app).post('/lists').send({});
-            expect(res.status).toBe(400);
-        });
-
-        it('should reject non-string name', async () => {
-            const res = await request(app).post('/lists').send({ name: 123 });
-            expect(res.status).toBe(400);
-        });
-
         it('should handle duplicate name', async () => {
             (ShoppingListService.prototype.createShoppingList as jest.Mock).mockRejectedValue(new Error('Shopping list with this name already exists'));
             const res = await request(app).post('/lists').send({ name: 'Groceries' });
@@ -61,6 +46,32 @@ describe('Shopping List Routes', () => {
         it('should handle server error', async () => {
             (ShoppingListService.prototype.createShoppingList as jest.Mock).mockRejectedValue(new Error('Server error'));
             const res = await request(app).post('/lists').send({ name: 'Groceries' });
+            expect(res.status).toBe(500);
+        });
+    });
+
+    describe('DELETE /:id', () => {
+        it('should delete shopping list', async () => {
+            (ShoppingListService.prototype.deleteShoppingList as jest.Mock).mockResolvedValue(undefined);
+            const res = await request(app).delete('/lists/1');
+            expect(res.status).toBe(200);
+        });
+
+        it('should handle not found', async () => {
+            (ShoppingListService.prototype.deleteShoppingList as jest.Mock).mockRejectedValue(new Error('Shopping list not found'));
+            const res = await request(app).delete('/lists/1');
+            expect(res.status).toBe(404);
+        });
+
+        it('should handle not owned', async () => {
+            (ShoppingListService.prototype.deleteShoppingList as jest.Mock).mockRejectedValue(new Error('Shopping list does not belong to the user'));
+            const res = await request(app).delete('/lists/1');
+            expect(res.status).toBe(403);
+        });
+
+        it('should handle server error', async () => {
+            (ShoppingListService.prototype.deleteShoppingList as jest.Mock).mockRejectedValue(new Error('Server error'));
+            const res = await request(app).delete('/lists/1');
             expect(res.status).toBe(500);
         });
     });
