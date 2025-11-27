@@ -32,4 +32,14 @@ export class ProductRepository {
             ]
         });
     }
+
+    async findById(productId: string): Promise<Product | null> {
+        return this.repository.findOne({
+            where: { id: productId }
+        });
+    }
+
+    async delete(productId: string): Promise<void> {
+        await this.repository.delete(productId);
+    }
 }
