@@ -5,7 +5,7 @@ export interface Product {
     user_id: string | null;
 }
 
-export interface Product_list {
+export interface ShoppingListProduct {
   list_id: string;
   product_id: string;
   price: number | null;
@@ -14,3 +14,6 @@ export interface Product_list {
   is_checked: boolean;
   added_at: Date;
 }
+
+// Alias for backwards compatibility
+export type Product_list = ShoppingListProduct;

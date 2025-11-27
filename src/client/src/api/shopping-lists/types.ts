@@ -1,5 +1,6 @@
 export interface ShoppingList {
     id: string;
-    title: string;
-    productList: string[];
+    name: string;
+    user_id: string;
+    created_at: Date;
 }

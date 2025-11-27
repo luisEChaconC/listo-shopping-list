@@ -25,7 +25,7 @@ export async function createProduct(payload: CreateProductPayload): Promise<{ su
     }
 }
 
-export async function getProducts(): Promise<{ success: boolean; products?: any[]; error?: string }> {
+export async function getProducts(): Promise<{ success: boolean; products?: Product[]; error?: string }> {
     try {
         const res = await authenticatedFetch(`${API_URL}/products`);
         if (res.ok) {
