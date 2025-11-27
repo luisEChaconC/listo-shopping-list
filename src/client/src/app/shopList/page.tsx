@@ -10,7 +10,7 @@ import Breadcrumb from '../components/breadcrumb'
 import SearchBar from '../components/searchbar'
 import { Product } from './types'
 import { Product_list } from './types'
-import { getProducts } from '../../api/products'
+import { getProducts, createProduct } from '../../api/products'
 import { getListProducts } from "../../api/shop-list-products";
 import { addProductToList, updateProductInList, deleteProductsFromList } from "../../api/shop-list-products";
 
@@ -85,18 +85,36 @@ export default function PageName() {
     return normalized.filter(p => !assocIds.has(p.id));
   }, [userProducts, listAssociatedProducts]);
 
-  function addProduct(prod: Product, isNew: string) {
-    const newAssoc: Product_list = {
-      list_id: currentListId,
-      product_id: prod.id,
-      price: 0,
-      quantity: 1,
-      unit: "",
-      is_checked: false,
-      added_at: new Date()
-    };
-
-    setListAssociatedProducts(prev => [...prev, newAssoc]);
+  async function addProduct(prod: Product, isNew: string) {
+    if(isNew == "No"){
+      const newAssoc: Product_list = {
+        list_id: currentListId,
+        product_id: prod.id,
+        price: 0,
+        quantity: 1,
+        unit: "unit",
+        is_checked: false,
+        added_at: new Date()
+      };
+      setListAssociatedProducts(prev => [...prev, newAssoc]);
+      
+    } else {
+      const result = await handleCreateProduct(isNew);
+      if(result.id != ""){
+        const newAssoc: Product_list = {
+        list_id: currentListId,
+        product_id: result.id,
+        price: 0,
+        quantity: 1,
+        unit: "unit",
+        is_checked: false,
+        added_at: new Date()
+      };
+      setUserProducts(prev => [...prev, result]);
+      setListAssociatedProducts(prev => [...prev, newAssoc]);
+      addedAssociatedProducts.current.push(newAssoc);
+      }
+    }
   }
 
   function deleteProductFromList(product_id: string) {
@@ -121,18 +139,29 @@ export default function PageName() {
     );
   }
 
+  const handleCreateProduct = async (name: string) => {
+    const result = await createProduct({ name })
+    if (result.success && result.product) {
+      NotificationService.showSuccess('Success!', `Product "${result.product.name}" created successfully`)
+      return result.product;
+    } else {
+      NotificationService.showError('Error', result.error || 'Failed to create product')
+      const emptyProduct: Product = {
+        id: "",
+        name: "",
+        user_id: "",
+        is_predefined: false
+      }
+
+      return emptyProduct;
+    }
+  }
+
   async function setChanges() {
 
-    console.log(
-      "🌿 LISTA ANTES DE GUARDAR (detalle):",
-      listAssociatedProducts.map(item => ({
-        ...item,
-        priceType: typeof item.price,
-        quantityType: typeof item.quantity,
-        unitType: typeof item.unit,
-        is_checkedType: typeof item.is_checked
-      }))
-    );
+    for (const item of addedAssociatedProducts.current) {
+      await addProductToList(item);
+    }
 
     for (const item of deletedAssociatedProducts.current) {
       await deleteProductsFromList(item.list_id, item.product_id);
@@ -163,17 +192,17 @@ export default function PageName() {
   }
 
   return (
-      <div className="min-h-screen items-center justify-center px-4 sm:px-6 lg:px-16">
-        <h1 className="text-3xl font-bold text-gray-900 mt-11 ml-10">
+      <div className="min-h-screen items-center justify-center px-4 sm:px-6 lg:px-40">
+        <h1 className="text-3xl font-bold text-gray-900 mt-11">
           Shop List
         </h1>
-        <div className="w-full h-16 bg-white flex items-center ml-10">
+        <div className="w-full h-16 bg-white flex items-center">
           <Breadcrumb breadLinks={breadLinks}/>
         </div>
 
         <div className="w-full h-16 bg-white-200 flex items-center">
           <h2 ></h2>
-          <div className="p-10 flex space-x-4">
+          <div className="flex space-x-4">
             <button 
               className="bg-black text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200"
               onClick={() => setChanges()}
@@ -181,83 +210,85 @@ export default function PageName() {
             Save changes
             </button>
           </div>
-          <div className="ml-auto p-10">
+          <div className="ml-auto">
             <SearchBar
               items={notList}
               onSelect={addProduct}
             />
           </div>
         </div>
-        <div className="w-full h-full bg-green-00 rounded-lg flex justify-center">
-          <table className="table-fixed w-11/12 text-center align-middle">
-            <thead>
-              <tr className='h-12 outline outline-1 overflow-hidden rounded-lg'>
-                <th className="w-1/24"> </th>
-                <th className="w-1/3">Product</th>
-                <th className="w-1/12">Quantity</th>
-                <th className="w-1/12">Unit</th>
-                <th className="w-1/12">Price</th>
-                <th className="w-1/3"> </th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...listAssociatedProducts].reverse().map((item, index) => (
-                <tr key={index} className={
-                  index === listAssociatedProducts.length - 1
-                  ? "h-14"
-                  : "h-14 border-b-[1px]"
-                }>
-                  <td className="text-left">
-                    <input 
-                      type="checkbox" 
-                      className="rounded-full mx-6" 
-                      defaultChecked={item.is_checked}
-                      onChange={e => updateItem(item.product_id, "is_checked", e.target.checked)}
-                    />
-                  </td>
-
-                  <td>{productMap[item.product_id]?.name ?? "??"}</td>
-
-                  <td>
-                    <input
-                      type="number"
-                      defaultValue={item.quantity ?? ""}
-                      className="text-center w-15"
-                      onChange={e => updateItem(item.product_id, "quantity", e.target.value === "" ? null : Number(e.target.value))}
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      type="text"
-                      defaultValue={item.unit ?? ""}
-                      className="text-center w-15"
-                      onChange={e => updateItem(item.product_id, "unit", e.target.value || null)}
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      type="number"
-                      defaultValue={item.price ?? ""}
-                      className="text-center w-15"
-                      onChange={e => updateItem(item.product_id, "price", e.target.value === "" ? null : Number(e.target.value))}
-                    />
-                  </td>
-
-                  <td className="text-right">
-                    <button className="bg-transparent hover:bg-gray-800 text-black-700 
-                      font-semibold hover:text-white py-1 px-4 border border-black-500 
-                      hover:border-transparent rounded mx-6" 
-                      onClick={() => deleteProductFromList(item.product_id)}
-                      >
-                      Delete
-                    </button>
-                  </td>
+        <div className="w-full min-w-[760px] flex justify-center">
+          <div className="flex justify-center overflow-x-auto md:overflow-visible">
+            <table className="table-fixed w-full text-center align-middle">
+              <thead className="outline outline-1 rounded-lg overflow-hidden">
+                <tr className='h-12'>
+                  <th className="w-1/24"> </th>
+                  <th className="w-1/3">Product</th>
+                  <th className="w-1/12">Quantity</th>
+                  <th className="w-1/12">Unit</th>
+                  <th className="w-1/12">Price</th>
+                  <th className="w-1/3"> </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {[...listAssociatedProducts].reverse().map((item, index) => (
+                  <tr key={item.product_id} className={
+                    index === listAssociatedProducts.length - 1
+                    ? "h-14"
+                    : "h-14 border-b-[1px]"
+                  }>
+                    <td className="text-left">
+                      <input 
+                        type="checkbox" 
+                        className="rounded-full mx-6" 
+                        defaultChecked={item.is_checked}
+                        onChange={e => updateItem(item.product_id, "is_checked", e.target.checked)}
+                      />
+                    </td>
+
+                    <td>{productMap[item.product_id]?.name ?? "??"}</td>
+
+                    <td>
+                      <input
+                        type="number"
+                        defaultValue={item.quantity ?? ""}
+                        className="text-center w-15"
+                        onChange={e => updateItem(item.product_id, "quantity", e.target.value === "" ? null : Number(e.target.value))}
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        type="text"
+                        defaultValue={item.unit ?? ""}
+                        className="text-center w-15"
+                        onChange={e => updateItem(item.product_id, "unit", e.target.value || null)}
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        type="number"
+                        defaultValue={item.price ?? ""}
+                        className="text-center w-15"
+                        onChange={e => updateItem(item.product_id, "price", e.target.value === "" ? null : Number(e.target.value))}
+                      />
+                    </td>
+
+                    <td className="text-right">
+                      <button className="bg-transparent hover:bg-gray-800 text-black-700 
+                        font-semibold hover:text-white py-1 px-4 border border-black-500 
+                        hover:border-transparent rounded mx-6" 
+                        onClick={() => deleteProductFromList(item.product_id)}
+                        >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
   )

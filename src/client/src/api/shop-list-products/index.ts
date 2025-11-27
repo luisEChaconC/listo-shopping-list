@@ -2,9 +2,7 @@ import { authenticatedFetch } from "../auth/authentication";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
 
-//
-// ⬇ Obtener TODOS los productos asociados a una lista
-//
+// Obtener TODOS los productos asociados a una lista
 export async function getListProducts(
     listId: string
 ): Promise<{ success: boolean; items?: any[]; error?: string }> {
@@ -26,16 +24,17 @@ export async function getListProducts(
     }
 }
 
-//
-// ⬇ Agregar un producto a la lista
-//
+
+// Agregar un producto a la lista
 export async function addProductToList(
     item: {
         list_id: string;
         product_id: string;
-        price?: number;
-        quantity?: number;
-        unit?: string;
+        price?: number | null;
+        quantity?: number | null;
+        unit?: string | null;
+        is_checked?: boolean | null;
+        added_at: Date;
     }
 ): Promise<{ success: boolean; item?: any; error?: string }> {
     try {
@@ -62,9 +61,7 @@ export async function addProductToList(
     }
 }
 
-//
-// ⬇ Actualizar un producto ya existente en la lista
-//
+// Actualizar un producto ya existente en la lista
 export async function updateProductInList(
     item: {
         list_id: string;
@@ -77,18 +74,7 @@ export async function updateProductInList(
     }
 ): Promise<{ success: boolean; item?: any; error?: string }> {
 
-    console.log("ITEM ANTES DE ENVIAR →", {
-      ...item,
-      priceType: typeof item.price,
-      quantityType: typeof item.quantity,
-      unitType: typeof item.unit,
-      is_checkedType: typeof item.is_checked,
-      added_atType: typeof item.added_at
-    });
-
-
     try {
-        console.log("AUTH HEADER →", authenticatedFetch);
         const res = await authenticatedFetch(`${API_URL}/shopping-list-products`, {
           method: "PUT",
           headers: {
@@ -96,7 +82,6 @@ export async function updateProductInList(
           },
           body: JSON.stringify(item)
       });
-
 
         if (res.ok) {
             const data = await res.json();
@@ -113,9 +98,7 @@ export async function updateProductInList(
     }
 }
 
-//
-// ⬇ Eliminar un producto de la lista
-//
+// Eliminar un producto de la lista
 export async function deleteProductsFromList(
     listId: string,
     productId: string
