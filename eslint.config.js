@@ -1,6 +1,6 @@
-const tseslint = require("typescript-eslint");
+import tseslint from "typescript-eslint";
 
-module.exports = [
+export default [
   {
     ignores: [
       "dist/**",
@@ -8,6 +8,8 @@ module.exports = [
       "coverage/**",
       "*.min.js",
       "*.bundle.js",
+      "src/client/.next/**",
+      ".next/**",
     ],
   },
   ...tseslint.configs.recommended,

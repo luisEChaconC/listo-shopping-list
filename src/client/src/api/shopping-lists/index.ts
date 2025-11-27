@@ -1,8 +1,9 @@
 import { authenticatedFetch } from "../auth/authentication";
+import { ShoppingList } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
 
-export async function getShoppingLists(): Promise<{ success: boolean; shoppingLists?: any[]; error?: string }> {
+export async function getShoppingLists(): Promise<{ success: boolean; shoppingLists?: ShoppingList[]; error?: string }> {
     try {
         const res = await authenticatedFetch(`${API_URL}/shopping-lists`);
         if (res.ok) {
@@ -17,7 +18,7 @@ export async function getShoppingLists(): Promise<{ success: boolean; shoppingLi
     }
 }
 
-export async function createShoppingList(name: string): Promise<{ success: boolean; shoppingList?: any; error?: string }> {
+export async function createShoppingList(name: string): Promise<{ success: boolean; shoppingList?: ShoppingList; error?: string }> {
     try {
         const res = await authenticatedFetch(`${API_URL}/shopping-lists`, {
             method: 'POST',

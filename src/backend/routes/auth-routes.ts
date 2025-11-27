@@ -37,7 +37,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
         const authService = new AuthService();
         const { token: newToken } = await authService.refresh(token);
         return res.status(200).json({ token: newToken });
-    } catch (error) {
+    } catch {
         return res.status(401).json({ error: "Invalid token" });
     }
 });

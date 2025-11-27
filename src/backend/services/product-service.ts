@@ -5,6 +5,13 @@ export interface CreateProductDto {
     user_id: string;
 }
 
+export interface ProductDto {
+    id: string;
+    name: string;
+    is_predefined: boolean;
+    user_id: string | null;
+}
+
 export class ProductService {
     private productRepository: ProductRepository;
 
@@ -33,7 +40,7 @@ export class ProductService {
         };
     }
 
-    async getUserProducts(userId: string): Promise<any[]> {
+    async getUserProducts(userId: string): Promise<ProductDto[]> {
         const products = await this.productRepository.findByUserId(userId);
         return products.map(product => ({
             id: product.id,

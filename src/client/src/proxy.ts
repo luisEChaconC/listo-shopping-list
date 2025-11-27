@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server'
 import jwt from 'jsonwebtoken'
+import { JwtPayload } from './api/auth/types'
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001"
 const JWT_SECRET = process.env.JWT_SECRET!
@@ -8,12 +9,12 @@ async function validateAndRefreshToken(token: string): Promise<{ valid: boolean,
     // First, verify the token signature (ignore expiry for now)
     try {
         jwt.verify(token, JWT_SECRET, { ignoreExpiration: true }) // Throws if invalid signature
-    } catch (err) {
+    } catch {
         return { valid: false, error: 'invalid_token' }
     }
 
     // Decode to check expiry
-    const decoded = jwt.decode(token) as any
+    const decoded = jwt.decode(token) as JwtPayload
     const now = Math.floor(Date.now() / 1000)
     const expired = decoded.exp < now
     const expiresSoon = decoded.exp - now < 300 // 5 minutes
@@ -34,7 +35,7 @@ async function validateAndRefreshToken(token: string): Promise<{ valid: boolean,
 
         const data = await res.json()
         return { valid: true, newToken: data.token }
-    } catch (error) {
+    } catch {
         return { valid: false, error: 'network' }
     }
 }

@@ -1,8 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
+export interface JwtPayload {
+    id: string;
+    email: string;
+    name: string;
+}
+
 export interface AuthRequest extends Request {
-    user?: any;
+    user?: JwtPayload;
 }
 
 export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -12,10 +18,10 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     }
     const token = authHeader.split(' ')[1];
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
         req.user = decoded;
         next();
-    } catch (error) {
+    } catch {
         return res.status(401).json({ error: 'Invalid token' });
     }
 };

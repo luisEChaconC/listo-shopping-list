@@ -1,10 +1,7 @@
 'use client'
 
-import Link from 'next/link'
-import { useState, useMemo, useRef } from "react";
-import React, { useEffect} from 'react';
-import { useSearchParams, useRouter } from 'next/navigation'
-import Layout from "../components/Layout";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { useSearchParams } from 'next/navigation'
 import { NotificationService } from "../../utils/notifications";
 import Breadcrumb from '../components/breadcrumb'
 import SearchBar from '../components/searchbar'
@@ -137,7 +134,7 @@ export default function PageName() {
     });
   }
 
-  function updateItem(product_id: string, field: keyof Product_list, value: any) {
+  function updateItem(product_id: string, field: keyof Product_list, value: string | number | boolean | null) {
     setListAssociatedProducts(prev =>
       prev.map(item =>
         item.product_id === product_id

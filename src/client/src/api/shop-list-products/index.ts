@@ -1,11 +1,12 @@
 import { authenticatedFetch } from "../auth/authentication";
+import { ShoppingListProduct } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
 
 // Obtener TODOS los productos asociados a una lista
 export async function getListProducts(
     listId: string
-): Promise<{ success: boolean; items?: any[]; error?: string }> {
+): Promise<{ success: boolean; items?: ShoppingListProduct[]; error?: string }> {
     try {
         const res = await authenticatedFetch(`${API_URL}/shopping-list-products/${listId}`);
 
@@ -36,7 +37,7 @@ export async function addProductToList(
         is_checked?: boolean | null;
         added_at: Date;
     }
-): Promise<{ success: boolean; item?: any; error?: string }> {
+): Promise<{ success: boolean; item?: ShoppingListProduct; error?: string }> {
     try {
         const res = await authenticatedFetch(`${API_URL}/shopping-list-products`, {
           method: "POST",
@@ -72,8 +73,7 @@ export async function updateProductInList(
         is_checked?: boolean | null;
         added_at: Date;
     }
-): Promise<{ success: boolean; item?: any; error?: string }> {
-
+): Promise<{ success: boolean; item?: ShoppingListProduct; error?: string }> {
     try {
         const res = await authenticatedFetch(`${API_URL}/shopping-list-products`, {
           method: "PUT",

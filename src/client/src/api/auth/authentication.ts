@@ -1,5 +1,5 @@
 
-import { RegisterUserPayload } from "./types";
+import { RegisterUserPayload, User } from "./types";
 import { AuthStorage } from "../../utils/auth-storage";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
@@ -24,7 +24,7 @@ export async function signup(payload: RegisterUserPayload): Promise<{ success: b
     }
 }
 
-export async function login(payload: { email: string; password: string }): Promise<{ success: boolean; user?: any; token?: string; error?: string }> {
+export async function login(payload: { email: string; password: string }): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
     try {
         const res = await fetch(`${API_URL}/auth/login`, {
             method: "POST",
@@ -65,7 +65,7 @@ export async function refreshToken(token: string): Promise<{ success: boolean; t
     }
 }
 
-export async function getCurrentUser(): Promise<{ success: boolean; user?: any; error?: string }> {
+export async function getCurrentUser(): Promise<{ success: boolean; user?: User; error?: string }> {
     try {
         const res = await authenticatedFetch(`${API_URL}/user/current`);
         if (res.ok) {
