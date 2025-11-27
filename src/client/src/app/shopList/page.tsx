@@ -259,8 +259,14 @@ export default function PageName() {
                     <td>
                       <input
                         type="number"
+                        min="0"
                         defaultValue={item.quantity ?? ""}
                         className="text-center w-15"
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e" || e.key === "+") {
+                            e.preventDefault();
+                          }
+                        }}
                         onChange={e => updateItem(item.product_id, "quantity", e.target.value === "" ? null : Number(e.target.value))}
                       />
                     </td>
@@ -277,8 +283,14 @@ export default function PageName() {
                     <td>
                       <input
                         type="number"
+                        min="0"
                         defaultValue={item.price ?? ""}
                         className="text-center w-15"
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e" || e.key === "+") {
+                            e.preventDefault();
+                          }
+                        }}
                         onChange={e => updateItem(item.product_id, "price", e.target.value === "" ? null : Number(e.target.value))}
                       />
                     </td>
