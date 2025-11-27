@@ -13,7 +13,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         }
 
         const productService = new ProductService();
-        const product = await productService.createProduct({ name, user_id: req.user.id });
+        const product = await productService.createProduct({ name, user_id: req.user!.id });
 
         return res.status(201).json({ product });
     } catch (error) {
@@ -30,7 +30,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
 router.get("/", async (req: AuthRequest, res: Response) => {
     try {
         const productService = new ProductService();
-        const products = await productService.getUserProducts(req.user.id);
+        const products = await productService.getUserProducts(req.user!.id);
         return res.status(200).json({ products });
     } catch {
         return res.status(500).json({ error: "Internal server error" });
@@ -40,7 +40,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 router.delete("/:id", async (req: AuthRequest, res: Response) => {
     try {
         const productId = req.params.id;
-        const userId = req.user.id;
+        const userId = req.user!.id;
 
         if (!productId) {
             return res.status(400).json({ error: "Product ID is required" });

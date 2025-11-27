@@ -7,7 +7,7 @@ const router = Router();
 router.get("/current", async (req: AuthRequest, res: Response) => {
     try {
         const userService = new UserService();
-        const user = await userService.getUserByEmail(req.user.email);
+        const user = await userService.getUserByEmail(req.user!.email);
         return res.status(200).json({ user });
     } catch (error) {
         if (error instanceof Error && error.message === 'User not found') {

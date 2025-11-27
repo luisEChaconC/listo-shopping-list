@@ -7,7 +7,7 @@ const router = Router();
 router.get("/", async (req: AuthRequest, res: Response) => {
     try {
         const shoppingListService = new ShoppingListService();
-        const shoppingLists = await shoppingListService.getShoppingListsByUserId(req.user.id);
+        const shoppingLists = await shoppingListService.getShoppingListsByUserId(req.user!.id);
         return res.status(200).json({ shoppingLists });
     } catch {
         return res.status(500).json({ error: "Internal server error" });
@@ -23,7 +23,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         }
 
         const shoppingListService = new ShoppingListService();
-        const shoppingList = await shoppingListService.createShoppingList(name.trim(), req.user.id);
+        const shoppingList = await shoppingListService.createShoppingList(name.trim(), req.user!.id);
         return res.status(201).json({ shoppingList });
     } catch (error) {
         // Handle uniqueness validation error
@@ -43,7 +43,7 @@ router.delete("/:id", async (req: AuthRequest, res: Response) => {
         }
 
         const shoppingListService = new ShoppingListService();
-        await shoppingListService.deleteShoppingList(id, req.user.id);
+        await shoppingListService.deleteShoppingList(id, req.user!.id);
         return res.status(200).json({ message: "Shopping list deleted successfully" });
     } catch (error) {
         if (error instanceof Error) {

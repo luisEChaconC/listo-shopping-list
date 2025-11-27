@@ -1,13 +1,14 @@
 import request from 'supertest';
 import express from 'express';
 import shoppingListProductRoutes from '../routes/shopping-list-product-routes';
+import { AuthRequest } from '../middleware/auth-middleware';
 
 jest.mock('../services/shopping-list-product-service');
 import { ShoppingListProductsService } from '../services/shopping-list-product-service';
 
 const app = express();
 app.use(express.json());
-app.use((req, _res, next) => { req.user = { id: '1' }; next(); });
+app.use((req, _res, next) => { (req as AuthRequest).user = { id: '1', email: 'test@test.com', name: 'Test' }; next(); });
 app.use('/list-products', shoppingListProductRoutes);
 
 describe('Shopping List Product Routes', () => {
