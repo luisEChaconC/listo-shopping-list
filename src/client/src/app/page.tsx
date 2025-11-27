@@ -3,7 +3,6 @@
 import React, { useEffect } from "react";
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
-import Layout from "./components/Layout";
 import { NotificationService } from "../utils/notifications";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faBox, faList } from "@fortawesome/free-solid-svg-icons"

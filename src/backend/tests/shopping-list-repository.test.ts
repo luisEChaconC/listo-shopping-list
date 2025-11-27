@@ -1,5 +1,4 @@
 import { ShoppingListRepository } from '../repositories/shopping-list-repository';
-import { ShoppingList } from '../models/ShoppingList';
 
 const mockRepository = {
     find: jest.fn(),

@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserRepository } from "../repositories/user-repository";
 import { User } from "../models/User";
+import { JwtPayload } from "../middleware/auth-middleware";
 
 export class AuthService {
     private userRepository: UserRepository;
@@ -31,7 +32,7 @@ export class AuthService {
 
     async refresh(token: string): Promise<{ token: string }> {
         try {
-            const payload = jwt.verify(token, process.env.JWT_SECRET!, { ignoreExpiration: true }) as any;
+            const payload = jwt.verify(token, process.env.JWT_SECRET!, { ignoreExpiration: true }) as JwtPayload;
             const user = await this.userRepository.findByEmail(payload.email);
             if (!user) {
                 throw new Error("User not found");
