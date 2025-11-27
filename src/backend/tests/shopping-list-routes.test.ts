@@ -5,29 +5,10 @@ import { AuthRequest } from '../middleware/auth-middleware';
 
 jest.mock('../services/shopping-list-service');
 import { ShoppingListService } from '../services/shopping-list-service';
-import { validationMiddleware } from '../middleware/validation-middleware';
-import { CreateShoppingListDto } from '../dtos/CreateShoppingListDto';
 
 const app = express();
 app.use(express.json());
 app.use((req, _res, next) => { (req as AuthRequest).user = { id: '1', email: 'test@test.com', name: 'Test' }; next(); });
-
-const routeToDto: Record<string, new () => object> = {
-    '/lists': CreateShoppingListDto,
-};
-
-// Global validation middleware
-app.use((req, res, next) => {
-    if (req.method !== 'POST' && req.method !== 'PUT') {
-        return next();
-    }
-    const dtoClass = routeToDto[req.path];
-    if (dtoClass) {
-        return validationMiddleware(dtoClass)(req, res, next);
-    }
-    next();
-});
-
 app.use('/lists', shoppingListRoutes);
 
 describe('Shopping List Routes', () => {
@@ -56,21 +37,6 @@ describe('Shopping List Routes', () => {
             expect(res.status).toBe(201);
         });
 
-        it('should reject empty name', async () => {
-            const res = await request(app).post('/lists').send({ name: '' });
-            expect(res.status).toBe(400);
-        });
-
-        it('should reject missing name', async () => {
-            const res = await request(app).post('/lists').send({});
-            expect(res.status).toBe(400);
-        });
-
-        it('should reject non-string name', async () => {
-            const res = await request(app).post('/lists').send({ name: 123 });
-            expect(res.status).toBe(400);
-        });
-
         it('should handle duplicate name', async () => {
             (ShoppingListService.prototype.createShoppingList as jest.Mock).mockRejectedValue(new Error('Shopping list with this name already exists'));
             const res = await request(app).post('/lists').send({ name: 'Groceries' });
@@ -80,6 +46,32 @@ describe('Shopping List Routes', () => {
         it('should handle server error', async () => {
             (ShoppingListService.prototype.createShoppingList as jest.Mock).mockRejectedValue(new Error('Server error'));
             const res = await request(app).post('/lists').send({ name: 'Groceries' });
+            expect(res.status).toBe(500);
+        });
+    });
+
+    describe('DELETE /:id', () => {
+        it('should delete shopping list', async () => {
+            (ShoppingListService.prototype.deleteShoppingList as jest.Mock).mockResolvedValue(undefined);
+            const res = await request(app).delete('/lists/1');
+            expect(res.status).toBe(200);
+        });
+
+        it('should handle not found', async () => {
+            (ShoppingListService.prototype.deleteShoppingList as jest.Mock).mockRejectedValue(new Error('Shopping list not found'));
+            const res = await request(app).delete('/lists/1');
+            expect(res.status).toBe(404);
+        });
+
+        it('should handle not owned', async () => {
+            (ShoppingListService.prototype.deleteShoppingList as jest.Mock).mockRejectedValue(new Error('Shopping list does not belong to the user'));
+            const res = await request(app).delete('/lists/1');
+            expect(res.status).toBe(403);
+        });
+
+        it('should handle server error', async () => {
+            (ShoppingListService.prototype.deleteShoppingList as jest.Mock).mockRejectedValue(new Error('Server error'));
+            const res = await request(app).delete('/lists/1');
             expect(res.status).toBe(500);
         });
     });

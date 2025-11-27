@@ -38,10 +38,6 @@ router.delete("/:id", async (req: AuthRequest, res: Response) => {
         const productId = req.params.id;
         const userId = req.user!.id;
 
-        if (!productId) {
-            return res.status(400).json({ error: "Product ID is required" });
-        }
-
         const productService = new ProductService();
         await productService.deleteUserProduct(productId, userId);
 

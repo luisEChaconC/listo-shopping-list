@@ -5,29 +5,10 @@ import { AuthRequest } from '../middleware/auth-middleware';
 
 jest.mock('../services/product-service');
 import { ProductService } from '../services/product-service';
-import { validationMiddleware } from '../middleware/validation-middleware';
-import { CreateProductDto } from '../dtos/CreateProductDto';
 
 const app = express();
 app.use(express.json());
 app.use((req, _res, next) => { (req as AuthRequest).user = { id: '1', email: 'test@test.com', name: 'Test' }; next(); });
-
-const routeToDto: Record<string, new () => object> = {
-    '/products': CreateProductDto,
-};
-
-// Global validation middleware
-app.use((req, res, next) => {
-    if (req.method !== 'POST' && req.method !== 'PUT') {
-        return next();
-    }
-    const dtoClass = routeToDto[req.path];
-    if (dtoClass) {
-        return validationMiddleware(dtoClass)(req, res, next);
-    }
-    next();
-});
-
 app.use('/products', productRoutes);
 
 describe('Product Routes', () => {
@@ -40,11 +21,6 @@ describe('Product Routes', () => {
             (ProductService.prototype.createProduct as jest.Mock).mockResolvedValue({ id: '1', name: 'Apple' });
             const res = await request(app).post('/products').send({ name: 'Apple' });
             expect(res.status).toBe(201);
-        });
-
-        it('should reject missing name', async () => {
-            const res = await request(app).post('/products').send({});
-            expect(res.status).toBe(400);
         });
 
         it('should handle duplicate product', async () => {

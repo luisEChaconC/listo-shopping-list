@@ -5,6 +5,7 @@ const mockRepository = {
     findOne: jest.fn(),
     create: jest.fn(),
     save: jest.fn(),
+    delete: jest.fn(),
 };
 
 jest.mock('../config/database', () => ({
@@ -42,6 +43,22 @@ describe('ShoppingListRepository', () => {
         it('should throw if list name exists', async () => {
             mockRepository.findOne.mockResolvedValue({ id: '1', name: 'Groceries' });
             await expect(repository.create('Groceries', 'user1')).rejects.toThrow('Shopping list with this name already exists');
+        });
+    });
+
+    describe('findById', () => {
+        it('should find shopping list by id', async () => {
+            mockRepository.findOne.mockResolvedValue({ id: '1', name: 'Groceries' });
+            const result = await repository.findById('1');
+            expect(result?.id).toBe('1');
+        });
+    });
+
+    describe('delete', () => {
+        it('should delete shopping list', async () => {
+            mockRepository.delete.mockResolvedValue({});
+            await repository.delete('1');
+            expect(mockRepository.delete).toHaveBeenCalledWith('1');
         });
     });
 });
