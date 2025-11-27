@@ -5,8 +5,20 @@ module.exports = {
   passWithNoTests: true,
   transform: {
     '^.+\\.ts$': ['ts-jest', {
-      useESM: false,
+      isolatedModules: true,
     }],
   },
   extensionsToTreatAsEsm: [],
+  collectCoverageFrom: [
+    'src/backend/**/*.ts',
+    '!src/backend/**/*.test.ts',
+    '!src/backend/tests/**',
+    '!src/backend/main.ts',
+    '!src/backend/config/**',
+  ],
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+  ],
+  coverageProvider: 'v8',
 };
