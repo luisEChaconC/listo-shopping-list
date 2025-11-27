@@ -15,6 +15,8 @@ module.exports = {
     '!src/backend/tests/**',
     '!src/backend/main.ts',
     '!src/backend/config/**',
+    '!src/backend/dtos/**',
+    '!src/backend/models/**',
   ],
   coveragePathIgnorePatterns: [
     '/node_modules/',
