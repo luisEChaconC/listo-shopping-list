@@ -33,4 +33,14 @@ export class ShoppingListRepository {
         });
         return await this.repository.save(shoppingList);
     }
+
+    async findById(id: string): Promise<ShoppingList | null> {
+        return await this.repository.findOne({
+            where: { id }
+        });
+    }
+
+    async delete(id: string): Promise<void> {
+        await this.repository.delete(id);
+    }
 }

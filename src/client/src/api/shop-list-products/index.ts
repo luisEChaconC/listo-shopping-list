@@ -3,9 +3,7 @@ import { ShoppingListProduct } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
 
-//
-// ⬇ Obtener TODOS los productos asociados a una lista
-//
+// Obtener TODOS los productos asociados a una lista
 export async function getListProducts(
     listId: string
 ): Promise<{ success: boolean; items?: ShoppingListProduct[]; error?: string }> {
@@ -27,23 +25,27 @@ export async function getListProducts(
     }
 }
 
-//
-// ⬇ Agregar un producto a la lista
-//
+
+// Agregar un producto a la lista
 export async function addProductToList(
     item: {
         list_id: string;
         product_id: string;
-        price?: number;
-        quantity?: number;
-        unit?: string;
+        price?: number | null;
+        quantity?: number | null;
+        unit?: string | null;
+        is_checked?: boolean | null;
+        added_at: Date;
     }
 ): Promise<{ success: boolean; item?: ShoppingListProduct; error?: string }> {
     try {
         const res = await authenticatedFetch(`${API_URL}/shopping-list-products`, {
-            method: "POST",
-            body: JSON.stringify(item)
-        });
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(item)
+      });
 
         if (res.ok) {
             const data = await res.json();
@@ -60,24 +62,26 @@ export async function addProductToList(
     }
 }
 
-//
-// ⬇ Actualizar un producto ya existente en la lista
-//
+// Actualizar un producto ya existente en la lista
 export async function updateProductInList(
     item: {
         list_id: string;
         product_id: string;
-        price?: number;
-        quantity?: number;
-        unit?: string;
-        is_checked?: boolean;
+        price?: number | null;
+        quantity?: number | null;
+        unit?: string | null;
+        is_checked?: boolean | null;
+        added_at: Date;
     }
 ): Promise<{ success: boolean; item?: ShoppingListProduct; error?: string }> {
     try {
         const res = await authenticatedFetch(`${API_URL}/shopping-list-products`, {
-            method: "PUT",
-            body: JSON.stringify(item)
-        });
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(item)
+      });
 
         if (res.ok) {
             const data = await res.json();
@@ -94,10 +98,8 @@ export async function updateProductInList(
     }
 }
 
-//
-// ⬇ Eliminar un producto de la lista
-//
-export async function deleteProductFromList(
+// Eliminar un producto de la lista
+export async function deleteProductsFromList(
     listId: string,
     productId: string
 ): Promise<{ success: boolean; error?: string }> {
