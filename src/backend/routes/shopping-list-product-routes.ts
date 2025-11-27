@@ -1,4 +1,5 @@
 import { Router, Response } from "express";
+import { authMiddleware } from "../middleware/auth-middleware";
 import { AuthRequest } from "../middleware/auth-middleware";
 import { ShoppingListProductsService } from "../services/shopping-list-product-service";
 
