@@ -45,7 +45,7 @@ router.delete("/:id", async (req: AuthRequest, res: Response) => {
         const shoppingListService = new ShoppingListService();
         await shoppingListService.deleteShoppingList(id, req.user.id);
         return res.status(200).json({ message: "Shopping list deleted successfully" });
-    } catch (error: any) {
+    } catch (error) {
         if (error instanceof Error) {
             if (error.message === "Shopping list not found") {
                 return res.status(404).json({ error: error.message });
