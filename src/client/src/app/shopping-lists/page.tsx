@@ -34,7 +34,7 @@ export default function ShoppingListsPage() {
     }
 
     const handleDeleteConfirm = async () => {
-        if (!listToDelete) return
+        if (!listToDelete) {return}
 
         const result = await deleteShoppingList(listToDelete.id)
         if (result.success) {
