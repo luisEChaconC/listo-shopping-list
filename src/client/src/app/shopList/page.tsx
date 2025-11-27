@@ -202,7 +202,7 @@ export default function PageName() {
             </thead>
             <tbody>
               {[...listAssociatedProducts].reverse().map((item, index) => (
-                <tr key={index} className={
+                <tr key={item.product_id} className={
                   index === listAssociatedProducts.length - 1
                   ? "h-14"
                   : "h-14 border-b-[1px]"
