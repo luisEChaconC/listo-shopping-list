@@ -16,7 +16,6 @@ import { RefreshDto } from "./dtos/RefreshDto";
 import { CreateProductDto } from "./dtos/CreateProductDto";
 import { CreateShoppingListDto } from "./dtos/CreateShoppingListDto";
 import { AddShoppingListProductDto } from "./dtos/AddShoppingListProductDto";
-import { UpdateShoppingListProductDto } from "./dtos/UpdateShoppingListProductDto";
 
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is not defined. Backend cannot start.");
@@ -31,7 +30,7 @@ app.use(cors({
 app.use(express.json());
 
 // Map of routes to DTOs for validation
-const routeToDto: { [key: string]: any } = {
+const routeToDto: Record<string, new () => object> = {
   '/auth/signup': CreateUserDto,
   '/auth/login': LoginDto,
   '/auth/refresh': RefreshDto,

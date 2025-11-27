@@ -2,7 +2,7 @@ import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { Request, Response, NextFunction } from 'express';
 
-function getDisplayName(dtoClass: any, property: string): string {
+function getDisplayName(dtoClass: new () => object, property: string): string {
     const mappings: Record<string, Record<string, string>> = {
         'CreateUserDto': {
             'name': 'Full Name',
@@ -35,7 +35,7 @@ function getDisplayName(dtoClass: any, property: string): string {
     return mappings[dtoClass.name]?.[property] || property.charAt(0).toUpperCase() + property.slice(1);
 }
 
-export function validationMiddleware(dtoClass: any) {
+export function validationMiddleware(dtoClass: new () => object) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const dto = plainToInstance(dtoClass, req.body);
         const errors = await validate(dto);

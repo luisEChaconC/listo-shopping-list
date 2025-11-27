@@ -118,9 +118,6 @@ export default function ProductCatalog() {
                                                 <FontAwesomeIcon icon={faMinus} className="w-4 h-4" />
                                             </button>
                                         )}
-                                        <button className="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-700 transition-colors">
-                                            <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
-                                        </button>
                                     </div>
                                 </div>
                             </div>

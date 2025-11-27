@@ -13,11 +13,6 @@ const app = express();
 app.use(express.json());
 app.use((req, _res, next) => { (req as AuthRequest).user = { id: '1', email: 'test@test.com', name: 'Test' }; next(); });
 
-// Map of routes to DTOs for validation
-const routeToDto: { [key: string]: any } = {
-    '/list-products': AddShoppingListProductDto,  // for POST
-};
-
 app.use((req, res, next) => {
     if (req.method === 'POST' && req.path === '/list-products') {
         return validationMiddleware(AddShoppingListProductDto)(req, res, next);

@@ -12,8 +12,7 @@ import { RefreshDto } from '../dtos/RefreshDto';
 const app = express();
 app.use(express.json());
 
-// Map of routes to DTOs for validation
-const routeToDto: { [key: string]: any } = {
+const routeToDto: Record<string, new () => object> = {
     '/auth/signup': CreateUserDto,
     '/auth/login': LoginDto,
     '/auth/refresh': RefreshDto,
