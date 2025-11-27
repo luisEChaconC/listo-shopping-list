@@ -12,10 +12,11 @@ export class NotificationService {
     }
 
     static showError(title: string, text?: string) {
+        const htmlText = text ? text.replace(/\n/g, '<br><br>') : undefined;
         return Swal.fire({
             icon: 'error',
             title,
-            text,
+            html: htmlText,
         });
     }
 

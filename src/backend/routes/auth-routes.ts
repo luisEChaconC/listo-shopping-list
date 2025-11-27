@@ -5,9 +5,6 @@ const router = Router();
 
 router.post("/signup", async (req: Request, res: Response) => {
     const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-        return res.status(400).json({ error: "Missing required fields" });
-    }
     try {
         const authService = new AuthService();
         const user = await authService.register({ name, email, password });
@@ -22,9 +19,6 @@ router.post("/signup", async (req: Request, res: Response) => {
 
 router.post("/login", async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    if (!email || !password) {
-        return res.status(400).json({ error: "Missing required fields" });
-    }
     try {
         const authService = new AuthService();
         const { user, token } = await authService.login({ email, password });
@@ -39,9 +33,6 @@ router.post("/login", async (req: Request, res: Response) => {
 
 router.post("/refresh", async (req: Request, res: Response) => {
     const { token } = req.body;
-    if (!token) {
-        return res.status(400).json({ error: "Token required" });
-    }
     try {
         const authService = new AuthService();
         const { token: newToken } = await authService.refresh(token);

@@ -4,10 +4,30 @@ import productRoutes from '../routes/product-routes';
 
 jest.mock('../services/product-service');
 import { ProductService } from '../services/product-service';
+import { validationMiddleware } from '../middleware/validation-middleware';
+import { CreateProductDto } from '../dtos/CreateProductDto';
 
 const app = express();
 app.use(express.json());
 app.use((req: any, _res, next) => { req.user = { id: '1' }; next(); });
+
+// Map of routes to DTOs for validation
+const routeToDto: { [key: string]: any } = {
+    '/products': CreateProductDto,
+};
+
+// Global validation middleware
+app.use((req, res, next) => {
+    if (req.method !== 'POST' && req.method !== 'PUT') {
+        return next();
+    }
+    const dtoClass = routeToDto[req.path];
+    if (dtoClass) {
+        return validationMiddleware(dtoClass)(req, res, next);
+    }
+    next();
+});
+
 app.use('/products', productRoutes);
 
 describe('Product Routes', () => {

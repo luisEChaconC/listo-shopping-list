@@ -4,10 +4,30 @@ import shoppingListRoutes from '../routes/shopping-list-routes';
 
 jest.mock('../services/shopping-list-service');
 import { ShoppingListService } from '../services/shopping-list-service';
+import { validationMiddleware } from '../middleware/validation-middleware';
+import { CreateShoppingListDto } from '../dtos/CreateShoppingListDto';
 
 const app = express();
 app.use(express.json());
 app.use((req: any, _res, next) => { req.user = { id: '1' }; next(); });
+
+// Map of routes to DTOs for validation
+const routeToDto: { [key: string]: any } = {
+    '/lists': CreateShoppingListDto,
+};
+
+// Global validation middleware
+app.use((req, res, next) => {
+    if (req.method !== 'POST' && req.method !== 'PUT') {
+        return next();
+    }
+    const dtoClass = routeToDto[req.path];
+    if (dtoClass) {
+        return validationMiddleware(dtoClass)(req, res, next);
+    }
+    next();
+});
+
 app.use('/lists', shoppingListRoutes);
 
 describe('Shopping List Routes', () => {

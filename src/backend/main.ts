@@ -10,6 +10,14 @@ import shoppingListRoutes from "./routes/shopping-list-routes";
 import productRoutes from "./routes/product-routes";
 import shoppingListProductRoutes from "./routes/shopping-list-product-routes"
 import { authMiddleware } from "./middleware/auth-middleware";
+import { validationMiddleware } from "./middleware/validation-middleware";
+import { CreateUserDto } from "./dtos/CreateUserDto";
+import { LoginDto } from "./dtos/LoginDto";
+import { RefreshDto } from "./dtos/RefreshDto";
+import { CreateProductDto } from "./dtos/CreateProductDto";
+import { CreateShoppingListDto } from "./dtos/CreateShoppingListDto";
+import { AddShoppingListProductDto } from "./dtos/AddShoppingListProductDto";
+import { UpdateShoppingListProductDto } from "./dtos/UpdateShoppingListProductDto";
 
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is not defined. Backend cannot start.");
@@ -22,6 +30,28 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+
+// Map of routes to DTOs for validation
+const routeToDto: { [key: string]: any } = {
+  '/auth/signup': CreateUserDto,
+  '/auth/login': LoginDto,
+  '/auth/refresh': RefreshDto,
+  '/products': CreateProductDto,
+  '/shopping-lists': CreateShoppingListDto,
+  '/shopping-list-products': AddShoppingListProductDto,
+};
+
+// Global validation middleware
+app.use((req, res, next) => {
+  if (req.path === '/health' || req.method !== 'POST' && req.method !== 'PUT') {
+    return next();
+  }
+  const dtoClass = routeToDto[req.path];
+  if (dtoClass) {
+    return validationMiddleware(dtoClass)(req, res, next);
+  }
+  next();
+});
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });

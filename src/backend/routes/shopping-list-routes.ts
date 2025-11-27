@@ -18,10 +18,6 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     try {
         const { name } = req.body;
 
-        if (!name || typeof name !== 'string' || name.trim().length === 0) {
-            return res.status(400).json({ error: "Name is required and must be a non-empty string" });
-        }
-
         const shoppingListService = new ShoppingListService();
         const shoppingList = await shoppingListService.createShoppingList(name.trim(), req.user.id);
         return res.status(201).json({ shoppingList });

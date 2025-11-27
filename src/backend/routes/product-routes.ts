@@ -8,10 +8,6 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     try {
         const { name } = req.body;
 
-        if (!name) {
-            return res.status(400).json({ error: "Product name is required" });
-        }
-
         const productService = new ProductService();
         const product = await productService.createProduct({ name, user_id: req.user.id });
 
