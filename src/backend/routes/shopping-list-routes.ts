@@ -25,7 +25,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         const shoppingListService = new ShoppingListService();
         const shoppingList = await shoppingListService.createShoppingList(name.trim(), req.user.id);
         return res.status(201).json({ shoppingList });
-    } catch (error: any) {
+    } catch (error) {
         // Handle uniqueness validation error
         if (error instanceof Error && error.message === "Shopping list with this name already exists") {
             return res.status(409).json({ error: "A shopping list with this name already exists" });
