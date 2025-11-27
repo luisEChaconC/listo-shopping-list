@@ -192,17 +192,17 @@ export default function PageName() {
   }
 
   return (
-      <div className="min-h-screen items-center justify-center px-4 sm:px-6 lg:px-16">
-        <h1 className="text-3xl font-bold text-gray-900 mt-11 ml-10">
+      <div className="min-h-screen items-center justify-center px-4 sm:px-6 lg:px-40">
+        <h1 className="text-3xl font-bold text-gray-900 mt-11">
           Shop List
         </h1>
-        <div className="w-full h-16 bg-white flex items-center ml-10">
+        <div className="w-full h-16 bg-white flex items-center">
           <Breadcrumb breadLinks={breadLinks}/>
         </div>
 
         <div className="w-full h-16 bg-white-200 flex items-center">
           <h2 ></h2>
-          <div className="p-10 flex space-x-4">
+          <div className="flex space-x-4">
             <button 
               className="bg-black text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200"
               onClick={() => setChanges()}
@@ -210,83 +210,85 @@ export default function PageName() {
             Save changes
             </button>
           </div>
-          <div className="ml-auto p-10">
+          <div className="ml-auto">
             <SearchBar
               items={notList}
               onSelect={addProduct}
             />
           </div>
         </div>
-        <div className="w-full h-full bg-green-00 rounded-lg flex justify-center">
-          <table className="table-fixed w-11/12 text-center align-middle">
-            <thead>
-              <tr className='h-12 outline outline-1 overflow-hidden rounded-lg'>
-                <th className="w-1/24"> </th>
-                <th className="w-1/3">Product</th>
-                <th className="w-1/12">Quantity</th>
-                <th className="w-1/12">Unit</th>
-                <th className="w-1/12">Price</th>
-                <th className="w-1/3"> </th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...listAssociatedProducts].reverse().map((item, index) => (
-                <tr key={item.product_id} className={
-                  index === listAssociatedProducts.length - 1
-                  ? "h-14"
-                  : "h-14 border-b-[1px]"
-                }>
-                  <td className="text-left">
-                    <input 
-                      type="checkbox" 
-                      className="rounded-full mx-6" 
-                      defaultChecked={item.is_checked}
-                      onChange={e => updateItem(item.product_id, "is_checked", e.target.checked)}
-                    />
-                  </td>
-
-                  <td>{productMap[item.product_id]?.name ?? "??"}</td>
-
-                  <td>
-                    <input
-                      type="number"
-                      defaultValue={item.quantity ?? ""}
-                      className="text-center w-15"
-                      onChange={e => updateItem(item.product_id, "quantity", e.target.value === "" ? null : Number(e.target.value))}
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      type="text"
-                      defaultValue={item.unit ?? ""}
-                      className="text-center w-15"
-                      onChange={e => updateItem(item.product_id, "unit", e.target.value || null)}
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      type="number"
-                      defaultValue={item.price ?? ""}
-                      className="text-center w-15"
-                      onChange={e => updateItem(item.product_id, "price", e.target.value === "" ? null : Number(e.target.value))}
-                    />
-                  </td>
-
-                  <td className="text-right">
-                    <button className="bg-transparent hover:bg-gray-800 text-black-700 
-                      font-semibold hover:text-white py-1 px-4 border border-black-500 
-                      hover:border-transparent rounded mx-6" 
-                      onClick={() => deleteProductFromList(item.product_id)}
-                      >
-                      Delete
-                    </button>
-                  </td>
+        <div className="w-full min-w-[760px] flex justify-center">
+          <div className="flex justify-center overflow-x-auto md:overflow-visible">
+            <table className="table-fixed w-full text-center align-middle">
+              <thead className="outline outline-1 rounded-lg overflow-hidden">
+                <tr className='h-12'>
+                  <th className="w-1/24"> </th>
+                  <th className="w-1/3">Product</th>
+                  <th className="w-1/12">Quantity</th>
+                  <th className="w-1/12">Unit</th>
+                  <th className="w-1/12">Price</th>
+                  <th className="w-1/3"> </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {[...listAssociatedProducts].reverse().map((item, index) => (
+                  <tr key={item.product_id} className={
+                    index === listAssociatedProducts.length - 1
+                    ? "h-14"
+                    : "h-14 border-b-[1px]"
+                  }>
+                    <td className="text-left">
+                      <input 
+                        type="checkbox" 
+                        className="rounded-full mx-6" 
+                        defaultChecked={item.is_checked}
+                        onChange={e => updateItem(item.product_id, "is_checked", e.target.checked)}
+                      />
+                    </td>
+
+                    <td>{productMap[item.product_id]?.name ?? "??"}</td>
+
+                    <td>
+                      <input
+                        type="number"
+                        defaultValue={item.quantity ?? ""}
+                        className="text-center w-15"
+                        onChange={e => updateItem(item.product_id, "quantity", e.target.value === "" ? null : Number(e.target.value))}
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        type="text"
+                        defaultValue={item.unit ?? ""}
+                        className="text-center w-15"
+                        onChange={e => updateItem(item.product_id, "unit", e.target.value || null)}
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        type="number"
+                        defaultValue={item.price ?? ""}
+                        className="text-center w-15"
+                        onChange={e => updateItem(item.product_id, "price", e.target.value === "" ? null : Number(e.target.value))}
+                      />
+                    </td>
+
+                    <td className="text-right">
+                      <button className="bg-transparent hover:bg-gray-800 text-black-700 
+                        font-semibold hover:text-white py-1 px-4 border border-black-500 
+                        hover:border-transparent rounded mx-6" 
+                        onClick={() => deleteProductFromList(item.product_id)}
+                        >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
   )
