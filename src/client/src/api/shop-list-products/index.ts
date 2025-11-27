@@ -33,9 +33,11 @@ export async function addProductToList(
     item: {
         list_id: string;
         product_id: string;
-        price?: number;
-        quantity?: number;
-        unit?: string;
+        price?: number | null;
+        quantity?: number | null;
+        unit?: string | null;
+        is_checked?: boolean | null;
+        added_at: Date;
     }
 ): Promise<{ success: boolean; item?: any; error?: string }> {
     try {

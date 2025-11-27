@@ -10,7 +10,7 @@ import Breadcrumb from '../components/breadcrumb'
 import SearchBar from '../components/searchbar'
 import { Product } from './types'
 import { Product_list } from './types'
-import { getProducts } from '../../api/products'
+import { getProducts, createProduct } from '../../api/products'
 import { getListProducts } from "../../api/shop-list-products";
 import { addProductToList, updateProductInList, deleteProductsFromList } from "../../api/shop-list-products";
 
@@ -85,18 +85,36 @@ export default function PageName() {
     return normalized.filter(p => !assocIds.has(p.id));
   }, [userProducts, listAssociatedProducts]);
 
-  function addProduct(prod: Product, isNew: string) {
-    const newAssoc: Product_list = {
-      list_id: currentListId,
-      product_id: prod.id,
-      price: 0,
-      quantity: 1,
-      unit: "",
-      is_checked: false,
-      added_at: new Date()
-    };
-
-    setListAssociatedProducts(prev => [...prev, newAssoc]);
+  async function addProduct(prod: Product, isNew: string) {
+    if(isNew == "No"){
+      const newAssoc: Product_list = {
+        list_id: currentListId,
+        product_id: prod.id,
+        price: 0,
+        quantity: 1,
+        unit: "unit",
+        is_checked: false,
+        added_at: new Date()
+      };
+      setListAssociatedProducts(prev => [...prev, newAssoc]);
+      
+    } else {
+      const result = await handleCreateProduct(isNew);
+      if(result.id != ""){
+        const newAssoc: Product_list = {
+        list_id: currentListId,
+        product_id: result.id,
+        price: 0,
+        quantity: 1,
+        unit: "unit",
+        is_checked: false,
+        added_at: new Date()
+      };
+      setUserProducts(prev => [...prev, result]);
+      setListAssociatedProducts(prev => [...prev, newAssoc]);
+      addedAssociatedProducts.current.push(newAssoc);
+      }
+    }
   }
 
   function deleteProductFromList(product_id: string) {
@@ -121,18 +139,29 @@ export default function PageName() {
     );
   }
 
+  const handleCreateProduct = async (name: string) => {
+    const result = await createProduct({ name })
+    if (result.success && result.product) {
+      NotificationService.showSuccess('Success!', `Product "${result.product.name}" created successfully`)
+      return result.product;
+    } else {
+      NotificationService.showError('Error', result.error || 'Failed to create product')
+      const emptyProduct: Product = {
+        id: "",
+        name: "",
+        user_id: "",
+        is_predefined: false
+      }
+
+      return emptyProduct;
+    }
+  }
+
   async function setChanges() {
 
-    console.log(
-      "🌿 LISTA ANTES DE GUARDAR (detalle):",
-      listAssociatedProducts.map(item => ({
-        ...item,
-        priceType: typeof item.price,
-        quantityType: typeof item.quantity,
-        unitType: typeof item.unit,
-        is_checkedType: typeof item.is_checked
-      }))
-    );
+    for (const item of addedAssociatedProducts.current) {
+      await addProductToList(item);
+    }
 
     for (const item of deletedAssociatedProducts.current) {
       await deleteProductsFromList(item.list_id, item.product_id);
