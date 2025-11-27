@@ -7,7 +7,7 @@ import { UserService } from '../services/user-service';
 
 const app = express();
 app.use(express.json());
-app.use((req: any, _res, next) => { req.user = { id: '1', email: 'test@test.com' }; next(); });
+app.use((req, _res, next) => { req.user = { id: '1', email: 'test@test.com' }; next(); });
 app.use('/user', userRoutes);
 
 describe('User Routes', () => {

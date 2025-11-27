@@ -7,7 +7,7 @@ import { ProductService } from '../services/product-service';
 
 const app = express();
 app.use(express.json());
-app.use((req: any, _res, next) => { req.user = { id: '1' }; next(); });
+app.use((req, _res, next) => { req.user = { id: '1' }; next(); });
 app.use('/products', productRoutes);
 
 describe('Product Routes', () => {

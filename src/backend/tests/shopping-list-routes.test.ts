@@ -7,7 +7,7 @@ import { ShoppingListService } from '../services/shopping-list-service';
 
 const app = express();
 app.use(express.json());
-app.use((req: any, _res, next) => { req.user = { id: '1' }; next(); });
+app.use((req, _res, next) => { req.user = { id: '1' }; next(); });
 app.use('/lists', shoppingListRoutes);
 
 describe('Shopping List Routes', () => {
