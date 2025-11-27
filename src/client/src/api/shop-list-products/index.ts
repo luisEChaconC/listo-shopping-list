@@ -40,9 +40,12 @@ export async function addProductToList(
 ): Promise<{ success: boolean; item?: any; error?: string }> {
     try {
         const res = await authenticatedFetch(`${API_URL}/shopping-list-products`, {
-            method: "POST",
-            body: JSON.stringify(item)
-        });
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(item)
+      });
 
         if (res.ok) {
             const data = await res.json();
@@ -66,17 +69,34 @@ export async function updateProductInList(
     item: {
         list_id: string;
         product_id: string;
-        price?: number;
-        quantity?: number;
-        unit?: string;
-        is_checked?: boolean;
+        price?: number | null;
+        quantity?: number | null;
+        unit?: string | null;
+        is_checked?: boolean | null;
+        added_at: Date;
     }
 ): Promise<{ success: boolean; item?: any; error?: string }> {
+
+    console.log("ITEM ANTES DE ENVIAR →", {
+      ...item,
+      priceType: typeof item.price,
+      quantityType: typeof item.quantity,
+      unitType: typeof item.unit,
+      is_checkedType: typeof item.is_checked,
+      added_atType: typeof item.added_at
+    });
+
+
     try {
+        console.log("AUTH HEADER →", authenticatedFetch);
         const res = await authenticatedFetch(`${API_URL}/shopping-list-products`, {
-            method: "PUT",
-            body: JSON.stringify(item)
-        });
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(item)
+      });
+
 
         if (res.ok) {
             const data = await res.json();
@@ -96,7 +116,7 @@ export async function updateProductInList(
 //
 // ⬇ Eliminar un producto de la lista
 //
-export async function deleteProductFromList(
+export async function deleteProductsFromList(
     listId: string,
     productId: string
 ): Promise<{ success: boolean; error?: string }> {
