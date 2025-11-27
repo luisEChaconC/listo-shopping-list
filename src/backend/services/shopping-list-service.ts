@@ -24,4 +24,18 @@ export class ShoppingListService {
             productList: []
         };
     }
+
+    async deleteShoppingList(listId: string, userId: string): Promise<void> {
+        const shoppingList = await this.shoppingListRepository.findById(listId);
+
+        if (!shoppingList) {
+            throw new Error("Shopping list not found");
+        }
+
+        if (shoppingList.user_id !== userId) {
+            throw new Error("Shopping list does not belong to the user");
+        }
+
+        await this.shoppingListRepository.delete(listId);
+    }
 }

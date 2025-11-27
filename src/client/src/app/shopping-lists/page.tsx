@@ -4,7 +4,8 @@
 import React, { useEffect, useState } from 'react';
 import ShoppingListCard from './components/ShoppingListCard'
 import NewListModal from './components/NewListModal'
-import { getShoppingLists, createShoppingList } from '../../api/shopping-lists'
+import DeleteConfirmationModal from './components/DeleteConfirmationModal'
+import { getShoppingLists, createShoppingList, deleteShoppingList } from '../../api/shopping-lists'
 import { ShoppingList } from './types'
 import { NotificationService } from '../../utils/notifications'
 
@@ -12,6 +13,8 @@ export default function ShoppingListsPage() {
     const [lists, setLists] = useState<ShoppingList[]>([])
     const [loading, setLoading] = useState(true)
     const [modalOpen, setModalOpen] = useState(false)
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+    const [listToDelete, setListToDelete] = useState<{ id: string; title: string } | null>(null)
 
     const handleCreateList = async (name: string) => {
         const result = await createShoppingList(name);
@@ -23,6 +26,31 @@ export default function ShoppingListsPage() {
             NotificationService.showError('Error creating shopping list', result.error);
         }
         setModalOpen(false);
+    }
+
+    const handleDeleteClick = (id: string, title: string) => {
+        setListToDelete({ id, title })
+        setDeleteModalOpen(true)
+    }
+
+    const handleDeleteConfirm = async () => {
+        if (!listToDelete) {return}
+
+        const result = await deleteShoppingList(listToDelete.id)
+        if (result.success) {
+            setLists(prev => prev.filter(list => list.id !== listToDelete.id))
+            NotificationService.showSuccess('Shopping list deleted successfully!')
+        } else if (result.error) {
+            NotificationService.showError('Error deleting shopping list', result.error)
+        }
+
+        setDeleteModalOpen(false)
+        setListToDelete(null)
+    }
+
+    const handleDeleteCancel = () => {
+        setDeleteModalOpen(false)
+        setListToDelete(null)
     }
 
     useEffect(() => {
@@ -55,6 +83,12 @@ export default function ShoppingListsPage() {
                 onClose={() => setModalOpen(false)}
                 onCreate={handleCreateList}
             />
+            <DeleteConfirmationModal
+                isOpen={deleteModalOpen}
+                onClose={handleDeleteCancel}
+                onConfirm={handleDeleteConfirm}
+                listName={listToDelete?.title || ''}
+            />
             <div className="w-full max-w-4xl">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-900">My Shopping Lists</h1>
@@ -77,6 +111,7 @@ export default function ShoppingListsPage() {
                                 id={list.id}
                                 title={list.title}
                                 productList={list.productList}
+                                onDelete={handleDeleteClick}
                             />
                         ))}
                     </div>
