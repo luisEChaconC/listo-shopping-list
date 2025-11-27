@@ -12,7 +12,7 @@ router.get("/:listId", async (req: AuthRequest, res: Response) => {
         const items = await service.getProductsForList(listId);
 
         return res.status(200).json({ items });
-    } catch (error) {
+    } catch {
         return res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -24,7 +24,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         const item = await service.addProduct(req.body);
 
         return res.status(201).json({ item });
-    } catch (error) {
+    } catch {
         return res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -36,7 +36,7 @@ router.put("/", async (req: AuthRequest, res: Response) => {
         const item = await service.updateProduct(req.body);
 
         return res.status(200).json({ item });
-    } catch (error) {
+    } catch {
         return res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -50,7 +50,7 @@ router.delete("/:listId/:productId", async (req: AuthRequest, res: Response) => 
         await service.deleteProduct(listId, productId);
 
         return res.status(200).json({ success: true });
-    } catch (error) {
+    } catch {
         return res.status(500).json({ error: "Internal server error" });
     }
 });

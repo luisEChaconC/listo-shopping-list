@@ -2,7 +2,6 @@
 
 import React, { useEffect } from "react";
 import { useSearchParams, useRouter } from 'next/navigation'
-import Layout from "./components/Layout";
 import { NotificationService } from "../utils/notifications";
 
 export default function Home() {

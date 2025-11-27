@@ -32,7 +32,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         const productService = new ProductService();
         const products = await productService.getUserProducts(req.user.id);
         return res.status(200).json({ products });
-    } catch (error) {
+    } catch {
         return res.status(500).json({ error: "Internal server error" });
     }
 });

@@ -1,5 +1,5 @@
 import { Router, Response } from "express";
-import { authMiddleware, AuthRequest } from "../middleware/auth-middleware";
+import { AuthRequest } from "../middleware/auth-middleware";
 import { ShoppingListService } from "../services/shopping-list-service";
 
 const router = Router();
@@ -9,7 +9,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         const shoppingListService = new ShoppingListService();
         const shoppingLists = await shoppingListService.getShoppingListsByUserId(req.user.id);
         return res.status(200).json({ shoppingLists });
-    } catch (error) {
+    } catch {
         return res.status(500).json({ error: "Internal server error" });
     }
 });

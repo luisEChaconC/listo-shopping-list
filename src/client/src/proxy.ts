@@ -8,7 +8,7 @@ async function validateAndRefreshToken(token: string): Promise<{ valid: boolean,
     // First, verify the token signature (ignore expiry for now)
     try {
         jwt.verify(token, JWT_SECRET, { ignoreExpiration: true }) // Throws if invalid signature
-    } catch (err) {
+    } catch {
         return { valid: false, error: 'invalid_token' }
     }
 
@@ -34,7 +34,7 @@ async function validateAndRefreshToken(token: string): Promise<{ valid: boolean,
 
         const data = await res.json()
         return { valid: true, newToken: data.token }
-    } catch (error) {
+    } catch {
         return { valid: false, error: 'network' }
     }
 }

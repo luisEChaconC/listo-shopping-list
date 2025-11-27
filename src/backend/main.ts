@@ -1,7 +1,6 @@
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
-import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { AppDataSource } from "./config/database";
 import authRoutes from "./routes/auth-routes";

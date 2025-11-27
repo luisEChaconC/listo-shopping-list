@@ -1,10 +1,8 @@
 'use client'
 
-import Link from 'next/link'
 import { useState, useMemo } from "react";
 import React, { useEffect} from 'react';
-import { useSearchParams, useRouter } from 'next/navigation'
-import Layout from "../components/Layout";
+import { useSearchParams } from 'next/navigation'
 import { NotificationService } from "../../utils/notifications";
 import Breadcrumb from '../components/breadcrumb'
 import SearchBar from '../components/searchbar'
@@ -73,7 +71,7 @@ export default function PageName() {
     return normalized.filter(p => !assocIds.has(p.id));
   }, [userProducts, listAssociatedProducts]);
 
-  function addProduct(prod: Product, isNew: string) {
+  function addProduct(prod: Product) {
     const newAssoc: Product_list = {
       list_id: currentListId,
       product_id: prod.id,
